@@ -3,7 +3,7 @@
 #include <QPushButton>
 #include <QGraphicsScene>
 
-mainmenu::mainmenu(Game* game): QGraphicsScene()
+Mainmenu::Mainmenu(Game* game): QGraphicsScene()
 {
     this->game = game;
 
@@ -26,10 +26,10 @@ mainmenu::mainmenu(Game* game): QGraphicsScene()
 
     addWidget(newGame_Button);
     //connect(newGame_Button, SIGNAL(clicked()), this, SLOT(new_game()));
-    connect(newGame_Button, &QPushButton::clicked, this, &mainmenu::new_game);
+    connect(newGame_Button, &QPushButton::clicked, this, &Mainmenu::new_game);
 }
 
-void mainmenu::new_game()
+void Mainmenu::new_game()
 {
-    game->scene()->clear();
+    game->openLevel1();
 }
