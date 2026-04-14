@@ -12,6 +12,7 @@ SOURCES += \
     baselevel.cpp \
     character.cpp \
     game.cpp \
+    grid.cpp \
     level1.cpp \
     main.cpp \
     mainmenu.cpp \
@@ -21,6 +22,7 @@ HEADERS += \
     baselevel.h \
     character.h \
     game.h \
+    grid.h \
     level1.h \
     mainmenu.h \
     player.h
