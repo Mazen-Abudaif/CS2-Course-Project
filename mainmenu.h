@@ -10,11 +10,11 @@
 #include <QFontDatabase>
 #include <QRandomGenerator>
 
-class mainmenu : public QGraphicsScene
+class Mainmenu : public QGraphicsScene
 {
     Q_OBJECT // needed for qt
 public:
-    mainmenu(Game* game); // main menu takes game as a paramter
+    Mainmenu(Game* game); // main menu takes game as a paramter
 private:
     Game* game;
 public slots:

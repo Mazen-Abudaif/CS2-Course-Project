@@ -9,15 +9,30 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    baselevel.cpp \
+    character.cpp \
     game.cpp \
+    level1.cpp \
     main.cpp \
-    mainmenu.cpp
+    mainmenu.cpp \
+    player.cpp
 
 HEADERS += \
+    baselevel.h \
+    character.h \
     game.h \
-    mainmenu.h
+    level1.h \
+    mainmenu.h \
+    player.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    resources.qrc
+
+DISTFILES += \
+    Images/background.jpg \
+    Images/skin.png
