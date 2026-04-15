@@ -20,12 +20,16 @@ private:
 
     void bossAttack();
     bool checkWinLose();
+    void updateUi();
+    void handleBossTurn();
 
 
     QLabel* playerHpLabel;
     QLabel* bossHpLabel;
+    QLabel* handLabel;
+    QLabel* bossActionLabel;
 
-    void updateUi();
+
 
 private slots:
      void playStrike();
