@@ -21,7 +21,13 @@ Grid::Grid(QGraphicsScene* scene)
 
     int x = col * tileSize;
     int y = row * tileSize;
-
+    
+    QPixmap trap(":/images/Images/background.jpg");
+    QSize targetSize(x,y);
+    QPixmap scaledPixmap = trap.scaled(targetSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    
+    QGraphicsPixmapItem* tr = new QGraphicsPixmapItem(scaledPixmap);
+    
     QPixmap trapPixmap(":/Images/skin.png");
 
     if (trapPixmap.isNull())

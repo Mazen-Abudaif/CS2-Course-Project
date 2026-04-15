@@ -12,6 +12,8 @@ Game::Game(int width, int height)
 
     gamescene = new Mainmenu(this);
     this->setScene(gamescene);
+
+    grid = new Grid(gamescene) ;
 }
 
 
