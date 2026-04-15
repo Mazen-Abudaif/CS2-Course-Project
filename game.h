@@ -3,7 +3,6 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QWidget>
-#include "grid.h"
 
 class Game : public QGraphicsView {
     Q_OBJECT //needed for qt
@@ -14,7 +13,6 @@ public:
     void openLevel1();
 private:
     QGraphicsScene* gamescene; // the scene for the game
-    Grid *grid ;
 
 };
 

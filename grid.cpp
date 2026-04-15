@@ -6,6 +6,9 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QGraphicsPixmapItem>
+#include <QMovie>
+#include <QGraphicsProxyWidget>
+#include <ranlib.h>
 
 
 Grid::Grid(QGraphicsScene* scene)
@@ -16,22 +19,41 @@ Grid::Grid(QGraphicsScene* scene)
     draw_room() ;
     gamescene->setSceneRect(0, 0, cols * tileSize, rows * tileSize);
 
-    int row = 2;
-    int col = 3;
-
-    int x = col * tileSize;
-    int y = row * tileSize;
-
-    QPixmap trapPixmap(":/Images/skin.png");
-
-    if (trapPixmap.isNull())
-        qDebug() << "trap image failed to load";
-    else
-        qDebug() << "trap image loaded";
-
-    gamescene->addPixmap(trapPixmap) -> setPos(x, y);
+    QPixmap trapPixmap(":/images/Images/trap.png");
+    trapPixmap = trapPixmap.scaled(60, 60, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QGraphicsPixmapItem* trapItem = new QGraphicsPixmapItem(trapPixmap);
+    QGraphicsPixmapItem* trapItem2 = new QGraphicsPixmapItem(trapPixmap);
+    setTrap(trapItem);
+    setTrap(trapItem2) ;
 
 }
+void Grid::set_trap_places(int x, int y)
+{
+    trap_places[starting_index].first = x;
+    trap_places[starting_index].second = y;
+    starting_index++ ;
+}
+
+void Grid::setTrap(QGraphicsPixmapItem* trap){
+    // setting the traps in random places each time
+    //making sure trap is not in wall tiles
+    int row, col;
+    do{
+            row = (arc4random()%rows) ;
+            col = (arc4random()%cols) ;
+    } while (row==0||col==0||row==rows-1||col==cols-1) ;
+
+
+    int x_cor = col * tileSize;
+    int y_cor = row * tileSize;
+
+    gamescene->addItem(trap);
+    trap->setPos(x_cor,y_cor);
+    trap->setZValue(1);
+
+    set_trap_places(x_cor,y_cor) ;
+};
+
 
 void Grid::initialize_room()
 {
@@ -92,7 +114,7 @@ void Grid::draw_walltile(int x, int y, int row, int col)
         Q_UNUSED(row);
         Q_UNUSED(col);
 
-        QColor wallColor(25,25,112);
+        QColor wallColor(48, 25, 52);
 
         gamescene->addRect(x, y, tileSize, tileSize,
                            Qt::NoPen,

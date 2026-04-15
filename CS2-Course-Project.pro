@@ -37,4 +37,6 @@ RESOURCES += \
 
 DISTFILES += \
     Images/background.jpg \
-    Images/skin.png
+    Images/backgrounddd.png \
+    Images/skin.png \
+    Images/trap.png
