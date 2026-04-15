@@ -12,7 +12,7 @@ public:
     void openMenu();
     void openLevel1();
 private:
-    QGraphicsScene* gamescene; // the scene for the game
+    QGraphicsScene* gameScene; // the scene for the game
 
 
 };
