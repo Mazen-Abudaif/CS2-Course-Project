@@ -11,6 +11,8 @@ public:
     void closeMenu();
     void openMenu();
     void openLevel1();
+    void openCombat();
+    void openReward();
 private:
     QGraphicsScene* gamescene; // the scene for the game
 

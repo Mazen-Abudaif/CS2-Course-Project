@@ -22,3 +22,15 @@ void Baselevel::setBackground(QGraphicsPixmapItem* background){
 void Baselevel::update(){
     game->ensureVisible(player, 500, 0);
 };
+
+QGraphicsScene* Baselevel::getScene() {
+    return scene;
+}
+
+Game* Baselevel::getGame() {
+    return game;
+}
+
+Player* Baselevel::getPlayer() {
+    return player;
+}

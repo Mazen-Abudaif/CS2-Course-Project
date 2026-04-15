@@ -11,21 +11,25 @@ CONFIG += c++17
 SOURCES += \
     baselevel.cpp \
     character.cpp \
+    combatscene.cpp \
     game.cpp \
     grid.cpp \
     level1.cpp \
     main.cpp \
     mainmenu.cpp \
-    player.cpp
+    player.cpp \
+    rewardscene.cpp
 
 HEADERS += \
     baselevel.h \
     character.h \
+    combatscene.h \
     game.h \
     grid.h \
     level1.h \
     mainmenu.h \
-    player.h
+    player.h \
+    rewardscene.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

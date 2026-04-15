@@ -1,4 +1,6 @@
 #include "level1.h"
+#include <QPushButton>
+#include <QGraphicsProxyWidget>
 
 Level1::Level1(QGraphicsScene* scene, Game* game) : Baselevel(scene, game) {}
 
@@ -13,4 +15,11 @@ void Level1::initialise(){
 
     Baselevel::initialise();
 
-};
+    QPushButton* combatButton = new QPushButton("Start Combat"); //placeholder until movement is implemented
+    getScene()->addWidget(combatButton)->setPos(1000, 600);
+
+    connect(combatButton, &QPushButton::clicked, [this]() {
+        getGame()->openCombat();
+    });
+}
+

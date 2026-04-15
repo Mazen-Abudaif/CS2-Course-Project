@@ -14,6 +14,10 @@ public:
     virtual void initialise() = 0;
     void setBackground(QGraphicsPixmapItem* background);
 
+    QGraphicsScene* getScene();
+    Game* getGame();
+    Player* getPlayer();
+
 private slots:
     void update();
 
