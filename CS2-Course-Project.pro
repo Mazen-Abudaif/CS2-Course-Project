@@ -9,9 +9,15 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    attackcard.cpp \
     baselevel.cpp \
+    blockcard.cpp \
+    boss.cpp \
+    card.cpp \
     character.cpp \
     combatscene.cpp \
+    characterselect.cpp \
+    consumable.cpp \
     game.cpp \
     grid.cpp \
     level1.cpp \
@@ -21,9 +27,15 @@ SOURCES += \
     rewardscene.cpp
 
 HEADERS += \
+    attackcard.h \
     baselevel.h \
+    blockcard.h \
+    boss.h \
+    card.h \
     character.h \
     combatscene.h \
+    characterselect.h \
+    consumable.h \
     game.h \
     grid.h \
     level1.h \

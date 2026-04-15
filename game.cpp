@@ -12,15 +12,15 @@ Game::Game(int width, int height)
     //set res
     this->setFixedSize(width, height);
 
-    gamescene = new Mainmenu(this);
-    this->setScene(gamescene);
+    gameScene = new Mainmenu(this);
+    this->setScene(gameScene);
 }
 
 
 void Game::openMenu()
 {
 
-    this->setScene(gamescene);
+    this->setScene(gameScene);
     this->show();
 
 }

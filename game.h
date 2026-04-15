@@ -14,7 +14,7 @@ public:
     void openCombat();
     void openReward();
 private:
-    QGraphicsScene* gamescene; // the scene for the game
+    QGraphicsScene* gameScene; // the scene for the game
 
 
 };

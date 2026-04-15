@@ -1,7 +1,6 @@
 #include "mainmenu.h"
 #include <QGraphicsPixmapItem>
 #include <QPushButton>
-#include <QGraphicsScene>
 
 Mainmenu::Mainmenu(Game* game): QGraphicsScene()
 {
