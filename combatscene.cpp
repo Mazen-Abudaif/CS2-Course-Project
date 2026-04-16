@@ -5,6 +5,9 @@
 #include <QGraphicsProxyWidget>
 #include <QMessageBox>
 #include <QGraphicsPixmapItem>
+#include <QTimer>
+#include <cstdlib>
+
 
 CombatScene::CombatScene(Game* game, QObject* parent)
     : QGraphicsScene(parent),
@@ -12,6 +15,7 @@ CombatScene::CombatScene(Game* game, QObject* parent)
     playerHp(100),
     bossHp(60),
     combatOver(false),
+    playerTurn(true),
     playerHpLabel(nullptr),
     bossHpLabel(nullptr),
     handLabel(nullptr),
@@ -38,7 +42,7 @@ void CombatScene::initialise()
 
     playerHpLabel = new QLabel("Player HP");
     bossHpLabel = new QLabel("Boss HP");
-    handLabel = new QLabel("Your Hand");
+    handLabel = new QLabel("Turn: Player");
     bossActionLabel = new QLabel("Boss Action: None");
     selectedCardLabel = new QLabel("Selected Card: None");
 
@@ -69,7 +73,7 @@ void CombatScene::initialise()
     addWidget(bossActionLabel)->setPos(500, 140);
     addWidget(selectedCardLabel)->setPos(500, 180);
 
-    addWidget(handLabel)->setPos(530, 470);
+    addWidget(handLabel)->setPos(560, 110);
 
     addWidget(attackButton)->setPos(360, 520);
     addWidget(healButton)->setPos(560, 520);
@@ -90,22 +94,30 @@ void CombatScene::updateUi()
     playerHpLabel->setText("Player HP");
     bossHpLabel->setText("Boss HP");
 
+    if (playerTurn)
+        handLabel->setText("Turn: Player");
+    else
+        handLabel->setText("Turn: Boss");
+
+
+
     playerHpLabel->adjustSize();
     bossHpLabel->adjustSize();
     bossActionLabel->adjustSize();
     selectedCardLabel->adjustSize();
+    handLabel->adjustSize();
+
 }
 
 void CombatScene::playStrike()
 {
-    if (combatOver)
+    if (combatOver || !playerTurn)
         return;
 
     selectedCardLabel->setText("Selected Card: Attack Card");
+    applyAttackCard();
 
-    bossHp -= 10;
-    if (bossHp < 0)
-        bossHp = 0;
+    playerTurn = false;
 
     updateUi();
 
@@ -117,14 +129,14 @@ void CombatScene::playStrike()
 
 void CombatScene::playHeal()
 {
-    if (combatOver)
+    if (combatOver || !playerTurn)
         return;
 
     selectedCardLabel->setText("Selected Card: Heal Card");
+    applyHealCard();
 
-    playerHp += 10;
-    if (playerHp > 100)
-        playerHp = 100;
+
+    playerTurn = false;
 
     updateUi();
 
@@ -136,36 +148,62 @@ void CombatScene::playHeal()
 
 void CombatScene::playBlock()
 {
-    if (combatOver)
+    if (combatOver || !playerTurn )
         return;
 
     selectedCardLabel->setText("Selected Card: Block Card");
-    bossActionLabel->setText("Boss Action: Block reduced damage");
+    applyBlockCard();
 
-    playerHp -= 3;
-    if (playerHp < 0)
-        playerHp = 0;
+    playerTurn = false;
 
     updateUi();
 
-    checkWinLose();
+    if (checkWinLose())
+        return;
+
+    handleBossTurn();
 }
 
 void CombatScene::handleBossTurn()
 {
+    updateUi();
+
+    attackButton->setEnabled(false);
+    healButton->setEnabled(false);
+    blockButton->setEnabled(false);
+
+    QTimer::singleShot(1000, this, [this]() {
+        if (combatOver)
+            return;
+
     bossAttack();
+    playerTurn = true;
+    updateUi();
     checkWinLose();
+
+    if (!combatOver) {
+        attackButton->setEnabled(true);
+        healButton->setEnabled(true);
+        blockButton->setEnabled(true);
+    }
+
+    });
 }
 
 void CombatScene::bossAttack()
 {
-    bossActionLabel->setText("Boss Action: Claw");
+    int action = rand() % 2;
 
-    playerHp -= 8;
+    if (action == 0) {
+        bossActionLabel->setText("Boss Action: Claw");
+        playerHp -= 8;
+    } else {
+        bossActionLabel->setText("Boss Action: Heavy Strike");
+        playerHp -= 12;
+    }
+
     if (playerHp < 0)
         playerHp = 0;
-
-    updateUi();
 }
 
 bool CombatScene::checkWinLose()
@@ -185,4 +223,21 @@ bool CombatScene::checkWinLose()
     }
 
     return false;
+}
+void CombatScene::applyAttackCard()
+{
+    bossHp -= 10;
+    if (bossHp < 0)
+        bossHp = 0;
+}
+
+void CombatScene::applyBlockCard()
+{
+    bossActionLabel->setText("Boss Action: Block reduced damage");
+}
+void CombatScene::applyHealCard()
+{
+    playerHp += 10;
+    if (playerHp > 100)
+        playerHp = 100;
 }

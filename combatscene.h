@@ -22,6 +22,9 @@ private:
     int playerHp;
     int bossHp;
     bool combatOver;
+    bool playerTurn;
+
+
 
     QLabel* playerHpLabel;
     QLabel* bossHpLabel;
@@ -40,6 +43,9 @@ private:
     void bossAttack();
     bool checkWinLose();
     void handleBossTurn();
+    void applyAttackCard();
+    void applyHealCard();
+    void applyBlockCard();
 
 private slots:
     void playStrike();
