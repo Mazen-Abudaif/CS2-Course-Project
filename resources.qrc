@@ -2,5 +2,7 @@
     <qresource prefix="/images">
         <file>Images/background.jpg</file>
         <file>Images/skin.png</file>
+        <file>Images/trap.png</file>
+        <file>Images/level 1_background.png</file>
     </qresource>
 </RCC>

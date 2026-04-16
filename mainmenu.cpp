@@ -7,7 +7,7 @@ Mainmenu::Mainmenu(Game* game): QGraphicsScene()
     this->game = game;
 
 
-    QPixmap background(":/images/startscreen.png");
+    QPixmap background(":/images/trap.png");
     background = background.scaled(1280,720, Qt::KeepAspectRatioByExpanding);
     QGraphicsPixmapItem* backgroundItem = new QGraphicsPixmapItem(background);
     addItem(backgroundItem);

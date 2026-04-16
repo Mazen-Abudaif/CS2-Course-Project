@@ -12,7 +12,14 @@ public:
     void drawCard();
     void playCard(int index);
 
+    void setGridPosition(int newRow, int newCol);
+    void setScenePosition(int x, int y) ;
+    int getRow() const;
+    int getCol() const;
+
 protected:
+    int row;
+    int col ;
     QPixmap skin;
     int health;
     QList<Card*> deck;

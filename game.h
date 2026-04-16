@@ -3,6 +3,9 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QWidget>
+#include <QKeyEvent>
+#include "player.h"
+#include "level1.h"
 
 class Game : public QGraphicsView {
     Q_OBJECT //needed for qt
@@ -15,7 +18,10 @@ public:
 
 private:
     QGraphicsScene* gameScene; // the scene for the game
+    Level1* level_1 ;
 
+protected:
+    void keyPressEvent(QKeyEvent *event) override;
 };
 
 

@@ -18,6 +18,7 @@ SOURCES += \
     characterselect.cpp \
     consumable.cpp \
     game.cpp \
+    grid.cpp \
     level1.cpp \
     main.cpp \
     mainmenu.cpp \
@@ -33,6 +34,7 @@ HEADERS += \
     characterselect.h \
     consumable.h \
     game.h \
+    grid.h \
     level1.h \
     mainmenu.h \
     player.h
@@ -47,4 +49,8 @@ RESOURCES += \
 
 DISTFILES += \
     Images/background.jpg \
-    Images/skin.png
+    Images/backgrounddd.png \
+    Images/level 1_background.png \
+    Images/level 1_background.png \
+    Images/skin.png \
+    Images/trap.png
