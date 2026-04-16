@@ -21,6 +21,8 @@ public:
 
     Player* getPlayer() const;
     Grid* getRoom() const;
+    QGraphicsScene* getScene();
+    Game* getGame();
 
 private slots:
     void update();

@@ -18,6 +18,11 @@ public:
 private:
     QGraphicsScene* gamescene;
     Level1* level_1 ;
+    void openCombat();
+    void openReward();
+    void openCharacterSelect();
+
+
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;

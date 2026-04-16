@@ -5,7 +5,7 @@
 class Player : public Character
 {
 public:
-    Player();
+    Player(QString characterType);
 };
 
 #endif // PLAYER_H

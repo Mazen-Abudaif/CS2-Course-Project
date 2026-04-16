@@ -8,13 +8,14 @@ Baselevel::Baselevel(QGraphicsScene* scene, Game* game) : QObject() , room(nullp
     timer->start(16);//60 fps
 }
 
-void Baselevel::initialise()
-{
 
+
+    
+
+
+void Baselevel::initialise(){
     room = new Grid(scene) ;
-
-    // creating player
-    player = new Player();
+    player = new Player("Warrior");
     scene->addItem(player);
 
     // setting initial position of character
@@ -83,4 +84,17 @@ void Baselevel::triggerDamageeffect()
     QTimer::singleShot(150, this, [this]() {
         damageOverlay->setVisible(false);
     });
+    game->ensureVisible(player, 500, 0);
+};
+
+QGraphicsScene* Baselevel::getScene() {
+    return scene;
+}
+
+Game* Baselevel::getGame() {
+    return game;
+}
+
+Player* Baselevel::getPlayer() {
+    return player;
 }
