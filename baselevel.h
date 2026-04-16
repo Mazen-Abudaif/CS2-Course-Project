@@ -12,9 +12,12 @@ class Baselevel : public QObject
 {
     Q_OBJECT
 public:
-    Baselevel(QGraphicsScene* scene, Game* game);
-    virtual void initialise() = 0;
+    Baselevel(QGraphicsScene* scene, Game* game); // constructor
+    virtual void initialise() = 0; // makes game a purely virtual function
+
     void setBackground(QGraphicsPixmapItem* background);
+
+    void triggerDamageeffect() ; // function to trigger screen effect when walked on trap
 
     Player* getPlayer() const;
     Grid* getRoom() const;
@@ -28,6 +31,8 @@ protected:
     Game* game;
     QTimer* timer;
     Player* player;
+    // adds effect when walked on trap
+    QGraphicsRectItem* damageOverlay;
 };
 
 #endif // BASELEVEL_H

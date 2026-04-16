@@ -46,12 +46,22 @@ void Game::keyPressEvent(QKeyEvent *event)
     {
         player->setGridPosition(newRow, newCol);
 
-        QPoint newPos = room->getScenePosition(newRow, newCol);
+        pair<int,int> player_pos_grid = {newRow, newCol} ;
 
-        int px = newPos.x() + (room->get_tile_size() - player->pixmap().width()) / 2;
-        int py = newPos.y() + (room->get_tile_size() - player->pixmap().height()) / 2;
+        // returns new position after offsetting
+        pair<int,int> newPos = room->calcScenePosition(newRow, newCol);
+
+        int px = newPos.first + (room->get_tile_size() - player->pixmap().width())/2 ;
+        int py = newPos.second + (room->get_tile_size() - player->pixmap().height())/2 ;
 
         player->setScenePosition(px, py);
+
+        if (player_pos_grid == room-> trap_places[0] || player_pos_grid == room-> trap_places[1] )
+        {
+            // TO DO : decrease health
+
+            level_1 -> triggerDamageeffect() ;
+        }
     }
 }
 
