@@ -2,9 +2,8 @@
 #include "mainmenu.h"
 #include "level1.h"
 
-Game::Game(int width, int height)
+Game::Game(int width,int height)
 {
-
     //disable scroll wheel horrizontly and verticly
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
