@@ -5,7 +5,7 @@
 Characterselect::Characterselect(Game* game) : QGraphicsScene()
 {
     this->game = game;
-    QPixmap background(":/images/startscreen.png");
+    QPixmap background(":/images/Images/background.jpg");
     background = background.scaled(1280,720, Qt::KeepAspectRatioByExpanding);
     QGraphicsPixmapItem* backgroundItem = new QGraphicsPixmapItem(background);
     addItem(backgroundItem);
