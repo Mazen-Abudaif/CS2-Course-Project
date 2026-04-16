@@ -28,3 +28,12 @@ Characterselect::Characterselect(Game* game) : QGraphicsScene()
     connect(selectWarrior_Button, &QPushButton::clicked, this, &Characterselect::selectWarrior);
 
 }
+void Characterselect::selectMage()
+{
+    game->openLevel1();
+}
+
+void Characterselect::selectWarrior()
+{
+    game->openLevel1();
+}

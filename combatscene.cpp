@@ -1,8 +1,10 @@
 #include "combatscene.h"
 #include "game.h"
+
 #include <QString>
 #include <QGraphicsProxyWidget>
 #include <QMessageBox>
+#include <QGraphicsPixmapItem>
 
 CombatScene::CombatScene(Game* game, QObject* parent)
     : QGraphicsScene(parent),
@@ -13,47 +15,93 @@ CombatScene::CombatScene(Game* game, QObject* parent)
     playerHpLabel(nullptr),
     bossHpLabel(nullptr),
     handLabel(nullptr),
-    bossActionLabel(nullptr)
-
+    bossActionLabel(nullptr),
+    selectedCardLabel(nullptr),
+    playerHpBar(nullptr),
+    bossHpBar(nullptr),
+    attackButton(nullptr),
+    healButton(nullptr),
+    blockButton(nullptr)
 {
 }
 
-// Sets up the combat UI
 void CombatScene::initialise()
 {
     setSceneRect(0, 0, 1280, 720);
 
-    playerHpLabel = new QLabel("Player HP: 100");
-    bossHpLabel = new QLabel("Boss HP: 60");
+    QPixmap background(":/images/Images/combat_bg_1280x720.png");
+    background = background.scaled(1280, 720, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+
+    QGraphicsPixmapItem* backgroundItem = new QGraphicsPixmapItem(background);
+    addItem(backgroundItem);
+    backgroundItem->setZValue(-1);
+
+    playerHpLabel = new QLabel("Player HP");
+    bossHpLabel = new QLabel("Boss HP");
     handLabel = new QLabel("Your Hand");
     bossActionLabel = new QLabel("Boss Action: None");
+    selectedCardLabel = new QLabel("Selected Card: None");
 
-    QPushButton* attackButton = new QPushButton("Attack Card");
-    QPushButton* healButton = new QPushButton("Heal Card");
+    playerHpBar = new QProgressBar();
+    playerHpBar->setRange(0, 100);
+    playerHpBar->setValue(playerHp);
+    playerHpBar->setFormat("%v / %m");
 
-    addWidget(playerHpLabel)->setPos(50, 50);
-    addWidget(bossHpLabel)->setPos(50, 100);
-    addWidget(bossActionLabel)->setPos(50, 150);
-    addWidget(handLabel)->setPos(50, 230);
+    bossHpBar = new QProgressBar();
+    bossHpBar->setRange(0, 60);
+    bossHpBar->setValue(bossHp);
+    bossHpBar->setFormat("%v / %m");
 
-    addWidget(attackButton)->setPos(50, 280);
-    addWidget(healButton)->setPos(200, 280);
+    attackButton = new QPushButton("Attack Card");
+    healButton = new QPushButton("Heal Card");
+    blockButton = new QPushButton("Block Card");
 
-    // Connects button clicks to player actions
+    attackButton->setFixedSize(140, 180);
+    healButton->setFixedSize(140, 180);
+    blockButton->setFixedSize(140, 180);
+
+    addWidget(playerHpLabel)->setPos(50, 40);
+    addWidget(playerHpBar)->setPos(50, 70);
+
+    addWidget(bossHpLabel)->setPos(900, 40);
+    addWidget(bossHpBar)->setPos(900, 70);
+
+    addWidget(bossActionLabel)->setPos(500, 140);
+    addWidget(selectedCardLabel)->setPos(500, 180);
+
+    addWidget(handLabel)->setPos(530, 470);
+
+    addWidget(attackButton)->setPos(360, 520);
+    addWidget(healButton)->setPos(560, 520);
+    addWidget(blockButton)->setPos(760, 520);
+
     connect(attackButton, &QPushButton::clicked, this, &CombatScene::playStrike);
     connect(healButton, &QPushButton::clicked, this, &CombatScene::playHeal);
+    connect(blockButton, &QPushButton::clicked, this, &CombatScene::playBlock);
+
+    updateUi();
 }
 
 void CombatScene::updateUi()
 {
-    playerHpLabel->setText("Player HP: " + QString::number(playerHp));
-    bossHpLabel->setText("Boss HP: " + QString::number(bossHp));
+    playerHpBar->setValue(playerHp);
+    bossHpBar->setValue(bossHp);
 
+    playerHpLabel->setText("Player HP");
+    bossHpLabel->setText("Boss HP");
+
+    playerHpLabel->adjustSize();
+    bossHpLabel->adjustSize();
+    bossActionLabel->adjustSize();
+    selectedCardLabel->adjustSize();
 }
 
-void CombatScene::playStrike() {
+void CombatScene::playStrike()
+{
     if (combatOver)
         return;
+
+    selectedCardLabel->setText("Selected Card: Attack Card");
 
     bossHp -= 10;
     if (bossHp < 0)
@@ -67,9 +115,12 @@ void CombatScene::playStrike() {
     handleBossTurn();
 }
 
-void CombatScene::playHeal() {
+void CombatScene::playHeal()
+{
     if (combatOver)
         return;
+
+    selectedCardLabel->setText("Selected Card: Heal Card");
 
     playerHp += 10;
     if (playerHp > 100)
@@ -77,13 +128,38 @@ void CombatScene::playHeal() {
 
     updateUi();
 
+    if (checkWinLose())
+        return;
+
     handleBossTurn();
 }
 
-// Simple boss attack
-void CombatScene::bossAttack() {
+void CombatScene::playBlock()
+{
+    if (combatOver)
+        return;
+
+    selectedCardLabel->setText("Selected Card: Block Card");
+    bossActionLabel->setText("Boss Action: Block reduced damage");
+
+    playerHp -= 3;
+    if (playerHp < 0)
+        playerHp = 0;
+
+    updateUi();
+
+    checkWinLose();
+}
+
+void CombatScene::handleBossTurn()
+{
+    bossAttack();
+    checkWinLose();
+}
+
+void CombatScene::bossAttack()
+{
     bossActionLabel->setText("Boss Action: Claw");
-    bossActionLabel->adjustSize();
 
     playerHp -= 8;
     if (playerHp < 0)
@@ -92,8 +168,8 @@ void CombatScene::bossAttack() {
     updateUi();
 }
 
-// Checks whether combat has ended
-bool CombatScene::checkWinLose() {
+bool CombatScene::checkWinLose()
+{
     if (bossHp <= 0) {
         combatOver = true;
         QMessageBox::information(nullptr, "Combat", "You Win!");
@@ -109,8 +185,4 @@ bool CombatScene::checkWinLose() {
     }
 
     return false;
-}
-void CombatScene::handleBossTurn() {
-    bossAttack();
-    checkWinLose();
 }

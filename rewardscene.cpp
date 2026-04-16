@@ -1,6 +1,8 @@
 #include "rewardscene.h"
 #include "game.h"
+
 #include <QGraphicsProxyWidget>
+#include <QGraphicsPixmapItem>
 
 RewardScene::RewardScene(Game* game, QObject* parent)
     : QGraphicsScene(parent),
@@ -12,7 +14,15 @@ RewardScene::RewardScene(Game* game, QObject* parent)
 // Sets up the reward selection screen
 void RewardScene::initialise()
 {
+
     setSceneRect(0, 0, 1280, 720);
+
+    QPixmap background(":/images/Images/reward_bg_1280x720.png");
+    background = background.scaled(1280, 720, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+
+    QGraphicsPixmapItem* backgroundItem = new QGraphicsPixmapItem(background);
+    addItem(backgroundItem);
+    backgroundItem->setZValue(-1);
 
     QLabel* titleLabel = new QLabel("Choose a Reward");
     QPushButton* reward1Button = new QPushButton("Boss Card 1");

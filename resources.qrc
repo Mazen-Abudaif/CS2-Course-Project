@@ -2,5 +2,7 @@
     <qresource prefix="/images">
         <file>Images/background.jpg</file>
         <file>Images/skin.png</file>
+        <file>Images/combat_bg_1280x720.png</file>
+        <file>Images/reward_bg_1280x720.png</file>
     </qresource>
 </RCC>

@@ -8,7 +8,7 @@ Baselevel::Baselevel(QGraphicsScene* scene, Game* game) : QObject() , scene(scen
 }
 
 void Baselevel::initialise(){
-    player = new Player();
+    player = new Player("Warrior");
     scene->addItem(player);
     player->setPos(100,500);
 }

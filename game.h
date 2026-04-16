@@ -13,6 +13,7 @@ public:
     void openLevel1();
     void openCombat();
     void openReward();
+    void openCharacterSelect();
 private:
     QGraphicsScene* gameScene; // the scene for the game
 

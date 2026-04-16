@@ -3,6 +3,7 @@
 #include "level1.h"
 #include "combatscene.h"
 #include "rewardscene.h"
+#include "characterselect.h"
 
 Game::Game(int width, int height)
 {
@@ -51,4 +52,9 @@ void Game::openReward()
     RewardScene* rewardScene = new RewardScene(this);
     rewardScene->initialise();
     this->setScene(rewardScene);
+}
+void Game::openCharacterSelect()
+{
+    QGraphicsScene* characterScene = new Characterselect(this);
+    this->setScene(characterScene);
 }
