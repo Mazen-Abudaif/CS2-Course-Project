@@ -21,6 +21,7 @@ private:
     QString selectedReward;
     QLabel* selectedRewardLabel;
 
+
 private slots:
     void chooseReward1();
     void chooseReward2();

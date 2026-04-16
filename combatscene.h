@@ -28,7 +28,7 @@ private:
 
     QLabel* playerHpLabel;
     QLabel* bossHpLabel;
-    QLabel* handLabel;
+    QLabel* turnLabel;
     QLabel* bossActionLabel;
     QLabel* selectedCardLabel;
 

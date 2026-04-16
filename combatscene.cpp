@@ -18,7 +18,7 @@ CombatScene::CombatScene(Game* game, QObject* parent)
     playerTurn(true),
     playerHpLabel(nullptr),
     bossHpLabel(nullptr),
-    handLabel(nullptr),
+    turnLabel(nullptr),
     bossActionLabel(nullptr),
     selectedCardLabel(nullptr),
     playerHpBar(nullptr),
@@ -42,7 +42,7 @@ void CombatScene::initialise()
 
     playerHpLabel = new QLabel("Player HP");
     bossHpLabel = new QLabel("Boss HP");
-    handLabel = new QLabel("Turn: Player");
+    turnLabel = new QLabel("Turn: Player");
     bossActionLabel = new QLabel("Boss Action: None");
     selectedCardLabel = new QLabel("Selected Card: None");
 
@@ -73,7 +73,7 @@ void CombatScene::initialise()
     addWidget(bossActionLabel)->setPos(500, 140);
     addWidget(selectedCardLabel)->setPos(500, 180);
 
-    addWidget(handLabel)->setPos(560, 110);
+    addWidget(turnLabel)->setPos(560, 110);
 
     addWidget(attackButton)->setPos(360, 520);
     addWidget(healButton)->setPos(560, 520);
@@ -95,9 +95,9 @@ void CombatScene::updateUi()
     bossHpLabel->setText("Boss HP");
 
     if (playerTurn)
-        handLabel->setText("Turn: Player");
+        turnLabel->setText("Turn: Player");
     else
-        handLabel->setText("Turn: Boss");
+        turnLabel->setText("Turn: Boss");
 
 
 
@@ -105,7 +105,7 @@ void CombatScene::updateUi()
     bossHpLabel->adjustSize();
     bossActionLabel->adjustSize();
     selectedCardLabel->adjustSize();
-    handLabel->adjustSize();
+    turnLabel->adjustSize();
 
 }
 

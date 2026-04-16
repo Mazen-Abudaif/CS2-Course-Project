@@ -29,13 +29,16 @@ void RewardScene::initialise()
     QPushButton* reward2Button = new QPushButton("Boss Card 2");
     QPushButton* continueButton = new QPushButton("Continue");
 
+    reward1Button->setFixedSize(140, 180);
+    reward2Button->setFixedSize(140, 180);
+
     selectedRewardLabel = new QLabel("Selected Reward: None");
 
-    addWidget(titleLabel)->setPos(50, 50);
-    addWidget(reward1Button)->setPos(50, 120);
-    addWidget(reward2Button)->setPos(50, 170);
-    addWidget(selectedRewardLabel)->setPos(50, 240);
-    addWidget(continueButton)->setPos(50, 310);
+    addWidget(titleLabel)->setPos(570, 50);
+    addWidget(reward1Button)->setPos(430, 320);
+    addWidget(reward2Button)->setPos(710, 320);
+    addWidget(selectedRewardLabel)->setPos(570, 520);
+    addWidget(continueButton)->setPos(570, 540);
 
     connect(reward1Button, &QPushButton::clicked, this, &RewardScene::chooseReward1);
     connect(reward2Button, &QPushButton::clicked, this, &RewardScene::chooseReward2);
@@ -44,14 +47,14 @@ void RewardScene::initialise()
 
 void RewardScene::chooseReward1()
 {
-    selectedReward = "Boss Card 1";
+    selectedReward = "Greater Heal";
     selectedRewardLabel->setText("Selected Reward: " + selectedReward);
     selectedRewardLabel->adjustSize();
 }
 
 void RewardScene::chooseReward2()
 {
-    selectedReward = "Boss Card 2";
+    selectedReward = "Dagger";
     selectedRewardLabel->setText("Selected Reward: " + selectedReward);
     selectedRewardLabel->adjustSize();
 }
