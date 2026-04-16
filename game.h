@@ -14,9 +14,10 @@ public:
     void openMenu();
     void openLevel1(); // function to open level 1 in the game
     void restart() ; // function to restart level
+    void openCharacterSelect();
 
 private:
-    QGraphicsScene* gamescene;
+    QGraphicsScene* gameScene; // the scene for the game
     Level1* level_1 ;
 
 protected:

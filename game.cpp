@@ -2,6 +2,7 @@
 #include "mainmenu.h"
 #include "level1.h"
 #include <QMessageBox>
+#include "characterselect.h"
 
 Game::Game(int width,int height)
 {
@@ -14,8 +15,8 @@ Game::Game(int width,int height)
     this->setFocusPolicy(Qt::StrongFocus);
     this->setFocus();
 
-    gamescene = new Mainmenu(this) ;
-    this->setScene(gamescene) ;
+    gameScene = new Mainmenu(this) ;
+    this->setScene(gameScene) ;
 
 }
 
@@ -83,7 +84,7 @@ void Game::keyPressEvent(QKeyEvent *event)
 void Game::openMenu()
 {
 
-    this->setScene(gamescene);
+    this->setScene(gameScene);
     this->show();
 
 }
@@ -134,4 +135,10 @@ void Game::restart()
 
 
 
+
+void Game::openCharacterSelect()
+{
+    Characterselect* characterSelectScene = new Characterselect(this);
+    this->setScene(characterSelectScene);
+}
 
