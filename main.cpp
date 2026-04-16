@@ -1,5 +1,6 @@
 #include <QApplication>
 #include "game.h"
+#include "grid.h"
 
 
 int main(int argc, char *argv[])

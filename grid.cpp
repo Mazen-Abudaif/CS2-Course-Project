@@ -2,15 +2,85 @@
 #include <QBrush>
 #include <QPen>
 #include <QColor>
+#include <QGridLayout>
+#include <QLabel>
+#include <QPixmap>
+#include <QGraphicsPixmapItem>
+#include <QMovie>
+#include <QGraphicsProxyWidget>
+#include <ranlib.h>
 
 
-Grid::Grid()
+Grid::Grid(QGraphicsScene* scene)
+    : gamescene(scene)
 {
+    int gridWidth = cols * tileSize;
+    int gridHeight = rows * tileSize;
+
+    offsetX = (1280 - gridWidth) / 2;
+    offsetY = (720 - gridHeight) / 2;
 
     initialize_room();
     draw_room() ;
     gamescene->setSceneRect(0, 0, cols * tileSize, rows * tileSize);
+
+    QPixmap trapPixmap(":/images/Images/trap.png");
+    trapPixmap = trapPixmap.scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QGraphicsPixmapItem* trapItem = new QGraphicsPixmapItem(trapPixmap);
+    QGraphicsPixmapItem* trapItem2 = new QGraphicsPixmapItem(trapPixmap);
+    setTrap(trapItem);
+    setTrap(trapItem2) ;
+
+
 }
+
+//function that checks if tile is walkable - for player movement
+bool Grid:: isWalkable(int row, int col)
+{
+    // check if outside range
+    if(row<0||col<0||row>=rows||col>=cols)
+            return false ;
+
+    //returns if its a wall or floor tile
+    return roomGrid[row][col]==0 ;
+
+}
+
+int Grid::get_tile_size()
+{
+    return tileSize ;
+}
+
+void Grid::set_trap_places(int x, int y)
+{
+    trap_places.push_back({x,y}) ;
+}
+
+void Grid::setTrap(QGraphicsPixmapItem* trap){
+    // setting the traps in random places each time
+    //making sure trap is not in wall tiles
+    int row, col;
+    do{
+            row = (arc4random()%rows) ;
+            col = (arc4random()%cols) ;
+    } while (row==0||col==0||row==rows-1||col==cols-1) ;
+
+    // saving trap place
+    set_trap_places(row,col) ;
+
+
+    QPoint pos = getScenePosition(row, col);
+
+    int tx = pos.x() + (tileSize - trap->pixmap().width()) / 2;
+    int ty = pos.y() + (tileSize - trap->pixmap().height()) / 2;
+
+    trap->setPos(tx, ty);
+
+    gamescene->addItem(trap);
+    trap->setZValue(1);
+
+};
+
 
 void Grid::initialize_room()
 {
@@ -48,8 +118,8 @@ void Grid::draw_room()
         for(int col=0 ; col<cols ; col++)
         {
             // making the grid using tileSize and number of col/rows
-            int x = col*tileSize ;
-            int y = row*tileSize ;
+            int x = offsetX + col * tileSize;
+            int y = offsetY + row * tileSize;
 
             if(roomGrid[row][col]==1)
             {
@@ -67,21 +137,47 @@ void Grid::draw_room()
 void Grid::draw_walltile(int x, int y, int row, int col)
 {
 
-    gamescene->addRect(x, y, tileSize, tileSize,QPen(QColor(20,10,30)),QBrush(QColor(40, 28, 50)));
+
+        Q_UNUSED(row);
+        Q_UNUSED(col);
+
+        QColor wallColor(48, 25, 52);
+
+        gamescene->addRect(x, y, tileSize, tileSize,
+                           Qt::NoPen,
+                           QBrush(wallColor));
+
 }
 
 
 
 void Grid::draw_floortile(int x,int y, int row, int col)
 {
-    QColor floorBase(75, 72, 98);
-    QColor gridLine(28, 18, 38);
 
-    // slight variation so tiles don't all look identical
-    // making a pattern
-    int variation = ((row + col) % 3) * 6;
+        Q_UNUSED(row);
+        Q_UNUSED(col);
 
-    gamescene->addRect(x, y, tileSize, tileSize,QPen(gridLine),QBrush(QColor(floorBase.red() + variation,floorBase.green()
-                                                                                                                + variation / 2,floorBase.blue() + variation)));
+        QColor floorColor(15, 15, 28);
+        QColor dotColor(225,0,0);
 
+        // base floor tile
+        gamescene->addRect(x, y, tileSize, tileSize,
+                           Qt::NoPen,
+                           QBrush(floorColor));
+
+        // center dot
+        int dotSize = 2;
+        int dotX = x + (tileSize - dotSize) / 2;
+        int dotY = y + (tileSize - dotSize) / 2;
+
+        gamescene->addEllipse(dotX, dotY, dotSize, dotSize,
+                              QPen(Qt::NoPen),
+                              QBrush(dotColor));
+}
+
+QPoint Grid::getScenePosition(int row, int col)
+{
+    int x = offsetX + col * tileSize;
+    int y = offsetY + row * tileSize;
+    return QPoint(x, y);
 }
