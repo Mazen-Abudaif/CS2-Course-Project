@@ -8,15 +8,26 @@ class Character : public QGraphicsPixmapItem
 public:
     Character();
 
-    void setGridPosition(int newRow, int newCol);
-    void setScenePosition(int x, int y) ;
+    void setGridPosition(int newRow, int newCol); // function to place player on the grid first
+    void setScenePosition(int x, int y) ; // since the grid is offset, this
+    //function is used to set the player on the scene based on grid position
+
     int getRow() const;
     int getCol() const;
+
+    // health functions
+    int getHealth() const ;
+    void setHealth(int x) ;
+    void decreaseHealth(int amount = 1) ;
+    bool isDead() const ;
 
 protected:
     int row;
     int col ;
     QPixmap skin;
+
+private:
+    int health ;
 };
 
 #endif // CHARACTER_H

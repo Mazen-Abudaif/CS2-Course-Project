@@ -1,6 +1,7 @@
 #include "game.h"
 #include "mainmenu.h"
 #include "level1.h"
+#include <QMessageBox>
 
 Game::Game(int width,int height)
 {
@@ -57,9 +58,24 @@ void Game::keyPressEvent(QKeyEvent *event)
 
         if (player_pos_grid == room-> trap_places[0] || player_pos_grid == room-> trap_places[1] )
         {
-            // TO DO : decrease health
-
             level_1 -> triggerDamageeffect() ;
+
+            player -> decreaseHealth() ;
+
+            level_1 -> updateHearts(player) ;
+
+            if(player->isDead())
+            {
+                QMessageBox::StandardButton reply = QMessageBox::question
+                    (this, "❌ Game Over ❌ ","You Died 🏴‍☠️\n Restart the Game?", QMessageBox::Yes | QMessageBox::No );
+                if(reply==QMessageBox::Yes)
+                    restart() ;
+                else
+                    {
+                        gamescene = new Mainmenu(this) ;
+                        this->setScene(gamescene) ;
+                    }
+            }
         }
     }
 }
@@ -89,4 +105,33 @@ void Game::openLevel1()
     this -> setScene(gamescene) ;
     this->setFocus() ;
 }
+
+void Game::restart()
+{
+    if(level_1)
+    {
+        delete level_1 ;
+        level_1 = nullptr ;
+    }
+
+    // creating new scene
+    gamescene = new QGraphicsScene() ;
+    gamescene -> setSceneRect(0,0,1280,720) ;
+
+    // creating the level from the beginning
+    level_1 = new Level1(gamescene,this) ;
+    level_1 -> initialise() ;
+
+    // set the game scene
+    this -> setScene(gamescene) ;
+    this -> setFocus() ;
+}
+
+
+
+
+
+
+
+
 

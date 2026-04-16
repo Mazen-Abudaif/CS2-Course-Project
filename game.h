@@ -4,16 +4,16 @@
 #include <QGraphicsScene>
 #include <QWidget>
 #include <QKeyEvent>
-#include "player.h"
 #include "level1.h"
 
 class Game : public QGraphicsView {
     Q_OBJECT //needed for qt
 public:
     Game(int w, int h); // constructor with width and height paramters
-    void closeMenu();
+    void closeMenu(); // functions to open main menu and close it
     void openMenu();
-    void openLevel1();
+    void openLevel1(); // function to open level 1 in the game
+    void restart() ; // function to restart level
 
 private:
     QGraphicsScene* gamescene;

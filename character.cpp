@@ -26,3 +26,22 @@ int Character::getCol() const
 {
     return col;
 }
+
+int Character :: getHealth() const
+{
+    return health ;
+}
+void Character :: setHealth(int x)
+{
+    health = x;
+}
+void Character :: decreaseHealth(int amount)
+{
+    health -= amount ;
+    if(health<0)
+        health = 0 ;
+}
+bool Character :: isDead() const
+{
+    return(health<=0) ;
+}
