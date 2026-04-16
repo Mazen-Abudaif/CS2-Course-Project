@@ -3,8 +3,10 @@
 #include <QObject>
 #include <QGraphicsScene>
 #include <QTimer>
-#include "game.h"
 #include "player.h"
+#include "grid.h"
+
+class Game ;
 
 class Baselevel : public QObject
 {
@@ -14,10 +16,14 @@ public:
     virtual void initialise() = 0;
     void setBackground(QGraphicsPixmapItem* background);
 
+    Player* getPlayer() const;
+    Grid* getRoom() const;
+
 private slots:
     void update();
 
-private:
+protected:
+    Grid *room ;
     QGraphicsScene* scene;
     Game* game;
     QTimer* timer;

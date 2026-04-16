@@ -14,24 +14,46 @@
 Grid::Grid(QGraphicsScene* scene)
     : gamescene(scene)
 {
+    int gridWidth = cols * tileSize;
+    int gridHeight = rows * tileSize;
+
+    offsetX = (1280 - gridWidth) / 2;
+    offsetY = (720 - gridHeight) / 2;
 
     initialize_room();
     draw_room() ;
     gamescene->setSceneRect(0, 0, cols * tileSize, rows * tileSize);
 
     QPixmap trapPixmap(":/images/Images/trap.png");
-    trapPixmap = trapPixmap.scaled(60, 60, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    trapPixmap = trapPixmap.scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     QGraphicsPixmapItem* trapItem = new QGraphicsPixmapItem(trapPixmap);
     QGraphicsPixmapItem* trapItem2 = new QGraphicsPixmapItem(trapPixmap);
     setTrap(trapItem);
     setTrap(trapItem2) ;
 
+
 }
+
+//function that checks if tile is walkable - for player movement
+bool Grid:: isWalkable(int row, int col)
+{
+    // check if outside range
+    if(row<0||col<0||row>=rows||col>=cols)
+            return false ;
+
+    //returns if its a wall or floor tile
+    return roomGrid[row][col]==0 ;
+
+}
+
+int Grid::get_tile_size()
+{
+    return tileSize ;
+}
+
 void Grid::set_trap_places(int x, int y)
 {
-    trap_places[starting_index].first = x;
-    trap_places[starting_index].second = y;
-    starting_index++ ;
+    trap_places.push_back({x,y}) ;
 }
 
 void Grid::setTrap(QGraphicsPixmapItem* trap){
@@ -43,15 +65,20 @@ void Grid::setTrap(QGraphicsPixmapItem* trap){
             col = (arc4random()%cols) ;
     } while (row==0||col==0||row==rows-1||col==cols-1) ;
 
+    // saving trap place
+    set_trap_places(row,col) ;
 
-    int x_cor = col * tileSize;
-    int y_cor = row * tileSize;
+
+    QPoint pos = getScenePosition(row, col);
+
+    int tx = pos.x() + (tileSize - trap->pixmap().width()) / 2;
+    int ty = pos.y() + (tileSize - trap->pixmap().height()) / 2;
+
+    trap->setPos(tx, ty);
 
     gamescene->addItem(trap);
-    trap->setPos(x_cor,y_cor);
     trap->setZValue(1);
 
-    set_trap_places(x_cor,y_cor) ;
 };
 
 
@@ -91,8 +118,8 @@ void Grid::draw_room()
         for(int col=0 ; col<cols ; col++)
         {
             // making the grid using tileSize and number of col/rows
-            int x = col*tileSize ;
-            int y = row*tileSize ;
+            int x = offsetX + col * tileSize;
+            int y = offsetY + row * tileSize;
 
             if(roomGrid[row][col]==1)
             {
@@ -146,4 +173,11 @@ void Grid::draw_floortile(int x,int y, int row, int col)
         gamescene->addEllipse(dotX, dotY, dotSize, dotSize,
                               QPen(Qt::NoPen),
                               QBrush(dotColor));
+}
+
+QPoint Grid::getScenePosition(int row, int col)
+{
+    int x = offsetX + col * tileSize;
+    int y = offsetY + row * tileSize;
+    return QPoint(x, y);
 }
