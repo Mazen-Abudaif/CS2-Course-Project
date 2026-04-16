@@ -1,4 +1,5 @@
 #include "grid.h"
+#include "boss.h"
 #include <QBrush>
 #include <QPen>
 #include <QColor>
@@ -13,6 +14,8 @@
 Grid::Grid(QGraphicsScene* scene)
     : gamescene(scene)
 {
+    detectionRange = 3 ; // 3 tiles
+
     int gridWidth = cols * tileSize;
     int gridHeight = rows * tileSize;
 
@@ -30,6 +33,12 @@ Grid::Grid(QGraphicsScene* scene)
     setTrap(trapItem);
     setTrap(trapItem2) ;
 
+    QPixmap BossPixmap(":/images/Images/demogorgon (enemy).png");
+    BossPixmap = BossPixmap.scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    boss = new Boss(100);
+    boss->setPixmap(BossPixmap);
+
+    Place_boss(boss);
 
 }
 
@@ -181,3 +190,77 @@ pair<int,int> Grid::calcScenePosition(int row, int col)
     int y = offsetY + row * tileSize;
     return {x,y} ;
 }
+
+void Grid::Place_boss(Boss* boss)
+{
+    // setting the boss in random place each time
+    int row, col;
+    do{
+        row = (arc4random()%rows) ;
+        col = (arc4random()%cols) ;
+    } while (row==0||col==0||row==rows-1||col==cols-1) ;
+
+    boss->setGridPosition(row, col);
+    pair<int,int> pos = calcScenePosition(row, col);
+
+    int tx = pos.first + (tileSize - boss->pixmap().width()) / 2;
+    int ty = pos.second + (tileSize - boss->pixmap().height()) / 2;
+
+    boss->setPos(tx, ty);
+
+    gamescene->addItem(boss);
+    boss->setZValue(2);
+    createDetectionCircle(gamescene,this) ;
+}
+
+void Grid::createDetectionCircle(QGraphicsScene* scene, Grid* room)
+{
+    int tileSize = room->get_tile_size();
+
+    int radius = detectionRange * tileSize;
+
+    pair<int,int> pos = room->calcScenePosition(boss->getRow(), boss-> getCol());
+
+    int centerX = pos.first + tileSize / 2;
+    int centerY = pos.second + tileSize / 2;
+
+    detectionCircle = new QGraphicsEllipseItem(
+        centerX - radius,
+        centerY - radius,
+        radius * 2,
+        radius * 2
+        );
+
+    detectionCircle->setBrush(QColor(255, 0, 0, 40)); // transparent red
+    detectionCircle->setPen(Qt::NoPen);
+    detectionCircle->setZValue(1); // behind boss
+
+    scene->addItem(detectionCircle);
+}
+
+bool Grid:: isPlayerNearby(int playerRow, int playerCol)
+{
+    int dist = abs(playerRow - boss->getRow()) + abs(playerCol - boss->getCol() ) ;
+
+    return dist<= detectionRange ;
+}
+
+void Grid::updateBossDetection(int playerRow, int playerCol)
+{
+    if (!boss || !detectionCircle)
+        return;
+
+    if (isPlayerNearby(playerRow, playerCol))
+        detectionCircle->setVisible(true);
+    else
+        detectionCircle->setVisible(false);
+}
+
+
+
+
+
+
+
+
+

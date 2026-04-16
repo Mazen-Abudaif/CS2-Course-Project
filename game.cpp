@@ -58,6 +58,7 @@ void Game::keyPressEvent(QKeyEvent *event)
         int py = newPos.second + (room->get_tile_size() - player->pixmap().height())/2 ;
 
         player->setScenePosition(px, py);
+        room->updateBossDetection(newRow, newCol);
 
         if (player_pos_grid == room-> trap_places[0] || player_pos_grid == room-> trap_places[1] )
         {

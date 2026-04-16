@@ -8,6 +8,7 @@
 #include <vector>
 #include <QGraphicsPixmapItem>
 
+
 class Game ;
 
 class Baselevel : public QObject
@@ -36,7 +37,7 @@ protected:
     QGraphicsScene* scene;
     Game* game;
     QTimer* timer;
-    Player* player;
+    Player* player ;
     // adds effect when walked on trap
     QGraphicsRectItem* damageOverlay;
     vector<QGraphicsPixmapItem*> hearts; // "player lives"

@@ -22,8 +22,6 @@ private:
     QGraphicsScene* gamescene;
     Level1* level_1 ;
 
-
-
 protected:
     void keyPressEvent(QKeyEvent *event) override;
 };
