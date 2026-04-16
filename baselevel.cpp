@@ -8,15 +8,15 @@ Baselevel::Baselevel(QGraphicsScene* scene, Game* game) : QObject() , room(nullp
     timer->start(16);//60 fps
 }
 
-
-
+void Baselevel::initialise(){
     
 
-
-void Baselevel::initialise(){
     room = new Grid(scene) ;
-    player = new Player("Warrior");
+
+    // creating player
+    player = new Player("mage");
     scene->addItem(player);
+    player -> setHealth(5) ; // setting health of the player
 
     // setting initial position of character
     player->setGridPosition(1,1);
@@ -40,6 +40,35 @@ void Baselevel::initialise(){
 
     scene->addItem(damageOverlay);
 
+    // setting hearts (lives)
+    QPixmap heartPixmap(":/images/Images/heart.png") ;
+    heartPixmap = heartPixmap.scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    int spacing = 22;
+    for (int i = 0; i < player->getHealth(); i++)
+    {
+        QGraphicsPixmapItem* heart = new QGraphicsPixmapItem(heartPixmap);
+
+        heart->setPos(580+i*spacing,110);
+        heart->setZValue(200);
+
+        scene->addItem(heart);
+        hearts.push_back(heart);
+    }
+
+}
+
+void Baselevel::updateHearts(Player *player)
+{
+    int currentHealth = player->getHealth();
+
+    for (int i = 0; i < hearts.size(); i++)
+    {
+        if (i < currentHealth)
+            hearts[i]->setVisible(true);
+        else
+            hearts[i]->setVisible(false);
+    }
 }
 
 void Baselevel::setBackground(QGraphicsPixmapItem* background){

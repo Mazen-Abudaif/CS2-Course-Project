@@ -4,6 +4,7 @@
         <file>Images/skin.png</file>
         <file>Images/trap.png</file>
         <file>Images/level 1_background.png</file>
+        <file>Images/heart.png</file>
         <file>Images/combat_bg_1280x720.png</file>
         <file>Images/reward_bg_1280x720.png</file>
     </qresource>

@@ -54,6 +54,8 @@ RESOURCES += \
 DISTFILES += \
     Images/background.jpg \
     Images/backgrounddd.png \
+    Images/heart.png \
+    Images/level 1_background.png \
     Images/level 1_background.png \
     Images/level 1_background.png \
     Images/skin.png \
