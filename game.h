@@ -17,7 +17,7 @@ public:
     void openCharacterSelect();
 
 private:
-    QGraphicsScene* gameScene; // the scene for the game
+    QGraphicsScene* gamescene; // the scene for the game
     Level1* level_1 ;
 
 protected:

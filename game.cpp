@@ -15,8 +15,8 @@ Game::Game(int width,int height)
     this->setFocusPolicy(Qt::StrongFocus);
     this->setFocus();
 
-    gameScene = new Mainmenu(this) ;
-    this->setScene(gameScene) ;
+    gamescene = new Mainmenu(this) ;
+    this->setScene(gamescene) ;
 
 }
 
@@ -56,6 +56,7 @@ void Game::keyPressEvent(QKeyEvent *event)
         int py = newPos.second + (room->get_tile_size() - player->pixmap().height())/2 ;
 
         player->setScenePosition(px, py);
+        room->updateBossDetection(newRow, newCol);
 
         if (player_pos_grid == room-> trap_places[0] || player_pos_grid == room-> trap_places[1] )
         {
@@ -84,7 +85,7 @@ void Game::keyPressEvent(QKeyEvent *event)
 void Game::openMenu()
 {
 
-    this->setScene(gameScene);
+    this->setScene(gamescene);
     this->show();
 
 }
@@ -127,14 +128,6 @@ void Game::restart()
     this -> setScene(gamescene) ;
     this -> setFocus() ;
 }
-
-
-
-
-
-
-
-
 
 void Game::openCharacterSelect()
 {

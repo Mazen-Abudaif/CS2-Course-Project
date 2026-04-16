@@ -1,6 +1,7 @@
 #ifndef GRID_H
 #define GRID_H
 
+#include "boss.h"
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QWidget>
@@ -41,14 +42,28 @@ public:
     // vector to store row and col of traps, to be able to check if player stepped on them
     vector<pair<int,int>> trap_places;
 
+    // function to place the boss randomly
+    void Place_boss(Boss* boss) ;
+
+    //function to create detection circle
+    void createDetectionCircle(QGraphicsScene* scene, Grid* room);
+
+    bool isPlayerNearby(int playerRow, int playerCol);
+
+    void updateBossDetection(int playerRow, int playerCol);
+
 private:
     QGraphicsScene* gamescene; // the scene for the game
+    Boss *boss ;
 
     static const int rows = 15;
     static const int cols = 20;
     static const int tileSize = 30;
 
     vector<vector<int>> roomGrid;
+
+    int detectionRange ;
+    QGraphicsEllipseItem* detectionCircle;
 
     int offsetX;
     int offsetY;

@@ -29,11 +29,11 @@ protected:
     int row;
     int col ;
     QPixmap skin;
+    QList<Card*> deck;
+    QList<Card*> hand;
 
 private:
     int health ;
-    QList<Card*> deck;
-    QList<Card*> hand;
 };
 
 #endif // CHARACTER_H

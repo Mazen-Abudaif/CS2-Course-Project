@@ -5,5 +5,6 @@
         <file>Images/trap.png</file>
         <file>Images/level 1_background.png</file>
         <file>Images/heart.png</file>
+        <file>Images/demogorgon (enemy).png</file>
     </qresource>
 </RCC>
