@@ -36,9 +36,25 @@ void CombatScene::initialise()
     QPixmap background(":/images/Images/combat_bg_1280x720.png");
     background = background.scaled(1280, 720, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
 
+    QPixmap playerSprite(":/images/Images/skin.png");
+    playerSprite = playerSprite.scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    QGraphicsPixmapItem* playerItem = new QGraphicsPixmapItem(playerSprite);
+    addItem(playerItem);
+    playerItem->setPos(150, 260);
+    playerItem->setZValue(1);
+
+    QPixmap bossSprite(":/images/Images/demogorgon (enemy).png");
+    bossSprite = bossSprite.scaled(220, 220, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    QGraphicsPixmapItem* bossItem = new QGraphicsPixmapItem(bossSprite);
+    addItem(bossItem);
+    bossItem->setPos(900, 180);
+    bossItem->setZValue(1);
+
     QGraphicsPixmapItem* backgroundItem = new QGraphicsPixmapItem(background);
     addItem(backgroundItem);
-    backgroundItem->setZValue(-1);
+    backgroundItem->setZValue(-200);
 
     playerHpLabel = new QLabel("Player HP");
     bossHpLabel = new QLabel("Boss HP");
