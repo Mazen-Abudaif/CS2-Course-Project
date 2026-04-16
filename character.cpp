@@ -1,9 +1,21 @@
 #include "character.h"
 
-Character::Character()
+Character::Character(int health) : health(health)
 {
     row = 1;
     col = 1;
+}
+
+void Character::drawCard()
+{
+    Card* card = deck.takeFirst();
+    hand.append(card);
+}
+
+void Character::playCard(int index)
+{
+    hand[index]->use();
+    hand.removeAt(index);
 }
 
 void Character::setGridPosition(int newRow, int newCol)

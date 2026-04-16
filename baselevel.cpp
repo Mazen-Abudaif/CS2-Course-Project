@@ -8,13 +8,13 @@ Baselevel::Baselevel(QGraphicsScene* scene, Game* game) : QObject() , room(nullp
     timer->start(16);//60 fps
 }
 
-void Baselevel::initialise()
-{
+void Baselevel::initialise(){
+    
 
     room = new Grid(scene) ;
 
     // creating player
-    player = new Player();
+    player = new Player("mage");
     scene->addItem(player);
 
     // setting initial position of character

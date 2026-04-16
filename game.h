@@ -14,9 +14,10 @@ public:
     void closeMenu();
     void openMenu();
     void openLevel1();
+    void openCharacterSelect();
 
 private:
-    QGraphicsScene* gamescene;
+    QGraphicsScene* gameScene; // the scene for the game
     Level1* level_1 ;
 
 protected:
