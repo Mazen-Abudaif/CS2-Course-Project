@@ -11,9 +11,10 @@ public:
     void closeMenu();
     void openMenu();
     void openLevel1();
+    void openCharacterSelect();
+
 private:
     QGraphicsScene* gameScene; // the scene for the game
-
 
 };
 

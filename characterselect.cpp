@@ -18,6 +18,7 @@ Characterselect::Characterselect(Game* game) : QGraphicsScene()
     selectMage_Button->setGeometry(QRect(490, 400, 100, 32)); // puts button at coords 640,360 with width/height 100/32
     selectMage_Button->setAutoFillBackground(false);
     connect(selectMage_Button, &QPushButton::clicked, this, &Characterselect::selectMage);
+    addWidget(selectMage_Button);
 
     QPushButton* selectWarrior_Button = new QPushButton();
     selectWarrior_Button->setText("Warrior");
@@ -26,5 +27,16 @@ Characterselect::Characterselect(Game* game) : QGraphicsScene()
     selectWarrior_Button->setGeometry(QRect(690, 400, 100, 32)); // puts button at coords 640,360 with width/height 100/32
     selectWarrior_Button->setAutoFillBackground(false);
     connect(selectWarrior_Button, &QPushButton::clicked, this, &Characterselect::selectWarrior);
-
+    addWidget(selectWarrior_Button);
 }
+
+void Characterselect::selectMage()
+{
+    game->openLevel1();
+}
+
+void Characterselect::selectWarrior()
+{
+    game->openLevel1();
+}
+

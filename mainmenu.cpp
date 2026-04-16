@@ -30,5 +30,5 @@ Mainmenu::Mainmenu(Game* game): QGraphicsScene()
 
 void Mainmenu::new_game()
 {
-    game->openLevel1();
+    game->openCharacterSelect();
 }

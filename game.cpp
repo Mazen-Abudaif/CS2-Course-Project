@@ -1,6 +1,7 @@
 #include "game.h"
 #include "mainmenu.h"
 #include "level1.h"
+#include "characterselect.h"
 
 Game::Game(int width, int height)
 {
@@ -36,5 +37,11 @@ void Game::openLevel1()
     Level1* level = new Level1(level1Scene, this);
     level->initialise();
     this->setScene(level1Scene);
+}
+
+void Game::openCharacterSelect()
+{
+    Characterselect* characterSelectScene = new Characterselect(this);
+    this->setScene(characterSelectScene);
 }
 
