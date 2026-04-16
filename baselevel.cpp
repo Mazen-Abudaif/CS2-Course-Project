@@ -113,4 +113,14 @@ void Baselevel::triggerDamageeffect()
     QTimer::singleShot(150, this, [this]() {
         damageOverlay->setVisible(false);
     });
+    game->ensureVisible(player, 500, 0);
+};
+
+QGraphicsScene* Baselevel::getScene() {
+    return scene;
 }
+
+Game* Baselevel::getGame() {
+    return game;
+}
+
