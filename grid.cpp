@@ -25,7 +25,7 @@ Grid::Grid(QGraphicsScene* scene)
     gamescene->setSceneRect(0, 0, cols * tileSize, rows * tileSize);
 
     QPixmap trapPixmap(":/images/Images/trap.png");
-    trapPixmap = trapPixmap.scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    trapPixmap = trapPixmap.scaled(35, 35, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     QGraphicsPixmapItem* trapItem = new QGraphicsPixmapItem(trapPixmap);
     QGraphicsPixmapItem* trapItem2 = new QGraphicsPixmapItem(trapPixmap);
     setTrap(trapItem);
@@ -69,10 +69,10 @@ void Grid::setTrap(QGraphicsPixmapItem* trap){
     set_trap_places(row,col) ;
 
 
-    QPoint pos = getScenePosition(row, col);
+    pair<int,int> pos = calcScenePosition(row, col);
 
-    int tx = pos.x() + (tileSize - trap->pixmap().width()) / 2;
-    int ty = pos.y() + (tileSize - trap->pixmap().height()) / 2;
+    int tx = pos.first + (tileSize - trap->pixmap().width()) / 2;
+    int ty = pos.second + (tileSize - trap->pixmap().height()) / 2;
 
     trap->setPos(tx, ty);
 
@@ -141,7 +141,7 @@ void Grid::draw_walltile(int x, int y, int row, int col)
         Q_UNUSED(row);
         Q_UNUSED(col);
 
-        QColor wallColor(48, 25, 52);
+        QColor wallColor(0,0,0);
 
         gamescene->addRect(x, y, tileSize, tileSize,
                            Qt::NoPen,
@@ -175,9 +175,11 @@ void Grid::draw_floortile(int x,int y, int row, int col)
                               QBrush(dotColor));
 }
 
-QPoint Grid::getScenePosition(int row, int col)
+// gets position of character on grid after offsetting.
+
+pair<int,int> Grid::calcScenePosition(int row, int col)
 {
     int x = offsetX + col * tileSize;
     int y = offsetY + row * tileSize;
-    return QPoint(x, y);
+    return {x,y} ;
 }

@@ -23,24 +23,26 @@ public:
 
     // function to set trap in its place
     void setTrap(QGraphicsPixmapItem* trap) ;
-    // function to get trap places in terms of rows and columns
+
+    // function to sett trap places in terms of rows and columns
     void set_trap_places(int row, int col) ;
 
     bool isWalkable(int row, int col);
     int get_tile_size() ;
 
     // getting player positions after offsetting the grid to make it appear in the middle
-    QPoint getScenePosition(int row, int col);
+    pair<int,int> calcScenePosition(int row, int col);
+
+    vector<pair<int,int>> trap_places;
 
 private:
     QGraphicsScene* gamescene; // the scene for the game
 
-    static const int rows = 20;
+    static const int rows = 15;
     static const int cols = 20;
     static const int tileSize = 30;
 
     vector<vector<int>> roomGrid;
-    vector<pair<int,int>> trap_places;
 
     int offsetX;
     int offsetY;
