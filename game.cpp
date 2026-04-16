@@ -17,8 +17,8 @@ Game::Game(int width,int height)
     this->setFocusPolicy(Qt::StrongFocus);
     this->setFocus();
 
-    gameScene = new Mainmenu(this) ;
-    this->setScene(gameScene) ;
+    gamescene = new Mainmenu(this) ;
+    this->setScene(gamescene) ;
 
 }
 
@@ -86,7 +86,7 @@ void Game::keyPressEvent(QKeyEvent *event)
 void Game::openMenu()
 {
 
-    this->setScene(gameScene);
+    this->setScene(gamescene);
     this->show();
 
 }
@@ -130,14 +130,6 @@ void Game::restart()
     this -> setFocus() ;
 }
 
-
-
-
-
-
-
-
-
 void Game::openCharacterSelect()
 {
     Characterselect* characterSelectScene = new Characterselect(this);
@@ -151,14 +143,11 @@ void Game::openCombat() {
     this->setScene(combatScene);
 }
 // opens reward scene after player wins combat
+
 void Game::openReward()
 {
     RewardScene* rewardScene = new RewardScene(this);
     rewardScene->initialise();
     this->setScene(rewardScene);
 }
-void Game::openCharacterSelect()
-{
-    QGraphicsScene* characterScene = new Characterselect(this);
-    this->setScene(characterScene);
-}
+

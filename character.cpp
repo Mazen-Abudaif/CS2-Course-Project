@@ -57,15 +57,3 @@ bool Character :: isDead() const
 {
     return(health<=0) ;
 }
-
-void Character::drawCard()
-{
-    Card* card = deck.takeFirst();
-    hand.append(card);
-}
-
-void Character::playCard(int index)
-{
-    hand[index]->use();
-    hand.removeAt(index);
-}

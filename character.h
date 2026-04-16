@@ -30,10 +30,12 @@ protected:
     int col ;
     QPixmap skin;
 
-private:
-    int health ;
+protected:
     QList<Card*> deck;
     QList<Card*> hand;
+
+private:
+    int health ;
 };
 
 #endif // CHARACTER_H

@@ -124,6 +124,3 @@ Game* Baselevel::getGame() {
     return game;
 }
 
-Player* Baselevel::getPlayer() {
-    return player;
-}

@@ -1,4 +1,5 @@
 #include "level1.h"
+#include "game.h"
 #include <QPushButton>
 #include <QGraphicsProxyWidget>
 
