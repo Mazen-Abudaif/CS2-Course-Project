@@ -14,9 +14,14 @@ class Grid
 {
 public:
     Grid(QGraphicsScene* scene) ;; // the parametrized constructor
+
+    // function to create empty grid and determine tile type (wall or floor)
     void initialize_room() ;
+
+    // function to draw wall and floor tiles
     void draw_room() ;
 
+    // functions to draw the tiles in the grid
     void draw_walltile(int x, int y, int row, int col);
     void draw_floortile(int x, int y, int row, int col);
 
@@ -33,6 +38,7 @@ public:
     // getting player positions after offsetting the grid to make it appear in the middle
     pair<int,int> calcScenePosition(int row, int col);
 
+    // vector to store row and col of traps, to be able to check if player stepped on them
     vector<pair<int,int>> trap_places;
 
 private:

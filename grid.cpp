@@ -137,7 +137,6 @@ void Grid::draw_room()
 void Grid::draw_walltile(int x, int y, int row, int col)
 {
 
-
         Q_UNUSED(row);
         Q_UNUSED(col);
 
