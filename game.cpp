@@ -3,6 +3,8 @@
 #include "level1.h"
 #include <QMessageBox>
 #include "characterselect.h"
+#include "combatscene.h"
+#include "rewardscene.h"
 
 Game::Game(int width,int height)
 {
@@ -133,5 +135,20 @@ void Game::openCharacterSelect()
 {
     Characterselect* characterSelectScene = new Characterselect(this);
     this->setScene(characterSelectScene);
+}
+
+// opens combat scene
+void Game::openCombat() {
+    CombatScene* combatScene = new CombatScene(this);
+    combatScene->initialise();
+    this->setScene(combatScene);
+}
+// opens reward scene after player wins combat
+
+void Game::openReward()
+{
+    RewardScene* rewardScene = new RewardScene(this);
+    rewardScene->initialise();
+    this->setScene(rewardScene);
 }
 

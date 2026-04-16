@@ -16,6 +16,7 @@ Player::Player(QString characterType) : Character(100) {
         int scaledWidth = skin.width() * 200 / skin.height();
         skin = skin.scaled(50, 50, Qt::KeepAspectRatio);
         setPixmap(skin);
+    
     } else if(characterType == "warrior")
     {
         deck.append(new Attackcard(5));

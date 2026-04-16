@@ -9,7 +9,6 @@
 #include <QGraphicsPixmapItem>
 #include <QMovie>
 #include <QGraphicsProxyWidget>
-#include <ranlib.h>
 
 
 Grid::Grid(QGraphicsScene* scene)
@@ -70,8 +69,8 @@ void Grid::setTrap(QGraphicsPixmapItem* trap){
     //making sure trap is not in wall tiles
     int row, col;
     do{
-            row = (arc4random()%rows) ;
-            col = (arc4random()%cols) ;
+            row = (rand()%rows) ;
+            col = (rand()%cols) ;
     } while (row==0||col==0||row==rows-1||col==cols-1) ;
 
     // saving trap place

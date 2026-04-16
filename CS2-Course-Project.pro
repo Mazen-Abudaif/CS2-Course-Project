@@ -15,6 +15,7 @@ SOURCES += \
     boss.cpp \
     card.cpp \
     character.cpp \
+    combatscene.cpp \
     characterselect.cpp \
     consumable.cpp \
     game.cpp \
@@ -22,7 +23,8 @@ SOURCES += \
     level1.cpp \
     main.cpp \
     mainmenu.cpp \
-    player.cpp
+    player.cpp \
+    rewardscene.cpp
 
 HEADERS += \
     attackcard.h \
@@ -31,13 +33,15 @@ HEADERS += \
     boss.h \
     card.h \
     character.h \
+    combatscene.h \
     characterselect.h \
     consumable.h \
     game.h \
     grid.h \
     level1.h \
     mainmenu.h \
-    player.h
+    player.h \
+    rewardscene.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

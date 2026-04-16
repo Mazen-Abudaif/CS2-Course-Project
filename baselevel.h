@@ -24,6 +24,8 @@ public:
 
     Player* getPlayer() const;
     Grid* getRoom() const;
+    QGraphicsScene* getScene();
+    Game* getGame();
 
     void updateHearts(Player *player); // updating hearts (lives) when character is damaged
 
