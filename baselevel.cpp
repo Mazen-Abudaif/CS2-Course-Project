@@ -11,7 +11,7 @@ Baselevel::Baselevel(QGraphicsScene* scene, Game* game) : QObject() , room(nullp
 void Baselevel::initialise(){
     
 
-    room = new Grid(scene,1,1,1) ;
+    room = new Grid(scene) ;
 
     // creating player
     player = new Player("mage");

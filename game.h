@@ -13,14 +13,20 @@ public:
     void closeMenu(); // functions to open main menu and close it
     void openMenu();
     void openLevel1(); // function to open level 1 in the game
+    void openLevel2() ;
+    void openLevel3() ;
+    void openLevel4() ;
+    void openLevel5() ;
     void restart() ; // function to restart level
     void openCharacterSelect();
     void openCombat();
     void openReward();
+    void openNextLevel() ;
 
 private:
     QGraphicsScene* gamescene;
     Level1* level_1 ;
+    int current_level ;
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
