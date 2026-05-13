@@ -2,6 +2,7 @@
 #include "attackcard.h"
 #include "blockcard.h"
 #include "consumable.h"
+#include <cstdlib>
 
 Boss::Boss(int health) : Character(health)
 {
@@ -12,5 +13,7 @@ Boss::Boss(int health) : Character(health)
 
 void Boss::aiPlayCard()
 {
-    playCard(0);
+    if (deck.isEmpty())
+        return;
+    playCard(rand() % deck.size());
 }

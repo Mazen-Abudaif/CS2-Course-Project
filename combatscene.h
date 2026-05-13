@@ -7,6 +7,7 @@
 #include <QProgressBar>
 
 class Game;
+class Boss;
 
 class CombatScene : public QGraphicsScene
 {
@@ -20,9 +21,10 @@ private:
     Game* game;
 
     int playerHp;
-    int bossHp;
+    Boss* boss;
     bool combatOver;
     bool playerTurn;
+    bool playerBlocking;
 
 
 
