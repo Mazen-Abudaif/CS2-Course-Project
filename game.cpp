@@ -192,10 +192,10 @@ void Game::openCombat()
     combatScene->initialise();
     this->setScene(combatScene);
 }
-// called on combat win — for level 4 removes defeated enemy and checks if all are gone
+// called on combat win — removes the defeated enemy and checks if more remain
 void Game::onCombatWin()
 {
-    if (current_level == 4 && level_1 != nullptr)
+    if (level_1 != nullptr && level_1->getRoom() != nullptr)
     {
         level_1->getRoom()->removeTriggeredEnemy() ;
 
