@@ -14,17 +14,20 @@ class CombatScene : public QGraphicsScene
     Q_OBJECT
 
 public:
-    CombatScene(Game* game, QObject* parent = nullptr);
+    CombatScene(Game* game, int bossMaxHp = 60, int immuneTurns = 0, QObject* parent = nullptr);
     void initialise();
 
 private:
     Game* game;
 
     int playerHp;
+    int bossMaxHp;
     Boss* boss;
     bool combatOver;
     bool playerTurn;
     bool playerBlocking;
+    int bossImmuneTurns;
+    bool abilityUsed;
 
 
 
@@ -40,6 +43,7 @@ private:
     QPushButton* attackButton;
     QPushButton* healButton;
     QPushButton* blockButton;
+    QPushButton* abilityButton;
 
     void updateUi();
     void bossAttack();
@@ -48,11 +52,13 @@ private:
     void applyAttackCard();
     void applyHealCard();
     void applyBlockCard();
+    void applyAbility();
 
 private slots:
     void playStrike();
     void playHeal();
     void playBlock();
+    void playAbility();
 };
 
 #endif // COMBATSCENE_H

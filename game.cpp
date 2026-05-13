@@ -11,6 +11,7 @@
 Game::Game(int width,int height)
 {
     current_level = 1 ;
+    selectedCharacter = "" ;
     //disable scroll wheel horrizontly and verticly
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -164,9 +165,29 @@ void Game::openCharacterSelect()
     this->setScene(characterSelectScene);
 }
 
+void Game::setSelectedCharacter(QString character)
+{
+    selectedCharacter = character ;
+}
+
+QString Game::getSelectedCharacter() const
+{
+    return selectedCharacter ;
+}
+
 // opens combat scene
-void Game::openCombat() {
-    CombatScene* combatScene = new CombatScene(this);
+void Game::openCombat()
+{
+    int bossHp = 60 ;
+    int bossImmuneTurns = 0 ;
+
+    if (current_level == 4)
+    {
+        bossHp = 120 ;
+        bossImmuneTurns = 2 ;
+    }
+
+    CombatScene* combatScene = new CombatScene(this, bossHp, bossImmuneTurns);
     combatScene->initialise();
     this->setScene(combatScene);
 }

@@ -4,6 +4,7 @@
 #include <QGraphicsScene>
 #include <QWidget>
 #include <QKeyEvent>
+#include <QString>
 #include "level1.h"
 
 class Game : public QGraphicsView {
@@ -21,12 +22,15 @@ public:
     void openCharacterSelect();
     void openCombat();
     void openReward();
+    void setSelectedCharacter(QString character);
+    QString getSelectedCharacter() const;
     void openNextLevel() ;
 
 private:
     QGraphicsScene* gamescene;
     Level1* level_1 ;
     int current_level ;
+    QString selectedCharacter;
 
 
 
