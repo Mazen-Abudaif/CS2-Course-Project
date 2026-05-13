@@ -47,7 +47,7 @@ public:
     bool isPlayerNearby(int playerRow, int playerCol);
 
     // function to create card collectibles and place them
-    void PlaceCards(int times, CardType type , QGraphicsPixmapItem* card) ;
+    void PlaceCards(int times,CardType type, const QPixmap& card) ;
 
     // vector to store row and col of traps, to be able to check if player stepped on them
     vector<pair<int,int>> trap_places;
@@ -56,6 +56,7 @@ public:
     // also stores item for later removal
     vector<pair<pair<int,int>,QGraphicsPixmapItem*>> attack_card_places;
     vector<pair<pair<int,int>,QGraphicsPixmapItem*>> block_card_places;
+    vector<pair<pair<int,int>,QGraphicsPixmapItem*>> heal_card_places;
 
     bool isCardPlaceTaken(int row,int col) ;
 
