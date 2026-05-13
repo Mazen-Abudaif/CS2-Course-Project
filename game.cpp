@@ -212,7 +212,7 @@ void Game::onCombatWin()
 // called on combat loss — restarts the appropriate level
 void Game::onCombatLose()
 {
-    if (current_level == 4)
+    if (dynamic_cast<Level4*>(level_1) != nullptr)
         openLevel4() ;
     else
         openLevel1() ;
