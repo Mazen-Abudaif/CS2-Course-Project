@@ -8,10 +8,14 @@ Baselevel::Baselevel(QGraphicsScene* scene, Game* game) : QObject() , room(nullp
     timer->start(16);//60 fps
 }
 
-void Baselevel::initialise(){
-    
-
+void Baselevel::setupRoom()
+{
     room = new Grid(scene) ;
+}
+
+void Baselevel::initialise(){
+
+    setupRoom() ;
 
     // creating player
     player = new Player("mage");

@@ -2,6 +2,7 @@
 #define COMBATSCENE_H
 
 #include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
 #include <QLabel>
 #include <QPushButton>
 #include <QProgressBar>
@@ -39,6 +40,9 @@ private:
 
     QProgressBar* playerHpBar;
     QProgressBar* bossHpBar;
+
+    QGraphicsPixmapItem* playerSprite;
+    QGraphicsPixmapItem* enemySprite;
 
     QPushButton* attackButton;
     QPushButton* healButton;

@@ -4,6 +4,7 @@
 #include "cardtype.h"
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QGraphicsEllipseItem>
 #include <QWidget>
 #include <vector>
 #include <QPoint>
@@ -13,7 +14,7 @@ using namespace std;
 class Grid
 {
 public:
-    Grid(QGraphicsScene* scene) ; // the parametrized constructor
+    Grid(QGraphicsScene* scene, bool spawnBoss = true) ; // the parametrized constructor
 
     // functions to spawn the items
     void SpawnTraps(int traps_no) ;
@@ -41,10 +42,18 @@ public:
     // function to place the boss randomly
     void Place_boss() ;
 
+    // functions to place level 4 enemy types
+    void PlaceFastEnemy() ;
+    void PlaceTankyEnemy() ;
+
     //function to create detection circle
     void createDetectionCircle(QGraphicsScene* scene, Grid* room);
 
     bool isPlayerNearby(int playerRow, int playerCol);
+
+    // returns stats of the enemy that triggered combat
+    int getTriggeredCombatHp() const ;
+    int getTriggeredImmuneTurns() const ;
 
     // function to create card collectibles and place them
     void PlaceCards(int times, CardType type , QGraphicsPixmapItem* card) ;
@@ -65,7 +74,16 @@ public:
 private:
     QGraphicsScene* gamescene; // the scene for the game
     int detectionRange = 2 ;
-    Boss *boss ;
+    Boss* boss ;
+    Boss* fastEnemy ;
+    Boss* tankyEnemy ;
+
+    QGraphicsEllipseItem* detectionCircle ;
+    QGraphicsEllipseItem* fastEnemyCircle ;
+    QGraphicsEllipseItem* tankyEnemyCircle ;
+
+    int triggeredCombatHp ;
+    int triggeredImmuneTurns ;
 
     static const int rows = 15;
     static const int cols = 20;
