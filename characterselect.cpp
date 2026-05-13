@@ -32,11 +32,13 @@ Characterselect::Characterselect(Game* game) : QGraphicsScene()
 
 void Characterselect::selectMage()
 {
+    game->setSelectedCharacter("Mage");
     game->openLevel1();
 }
 
 void Characterselect::selectWarrior()
 {
+    game->setSelectedCharacter("Warrior");
     game->openLevel1();
 }
 
