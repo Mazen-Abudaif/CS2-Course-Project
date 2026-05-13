@@ -70,7 +70,7 @@ void Game::keyPressEvent(QKeyEvent *event)
 
             player -> decreaseHealth() ;
 
-            level_1->updateHpBar(player);
+            level_1 -> updateHearts(player) ;
 
             if(player->isDead())
             {

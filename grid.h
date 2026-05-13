@@ -1,6 +1,5 @@
 #ifndef GRID_H
 #define GRID_H
-
 #include "boss.h"
 #include "cardtype.h"
 #include <QGraphicsView>
@@ -63,20 +62,17 @@ public:
     // function to remove cards once stepped on them
     void RemoveCard(pair<int, int> place) ;
 
-
+    // vector to store row and col of traps, to be able to check if player stepped on them
+    vector<pair<int,int>> trap_places;
 
 private:
     QGraphicsScene* gamescene; // the scene for the game
-    Boss *boss ;
 
     static const int rows = 15;
     static const int cols = 20;
     static const int tileSize = 30;
 
     vector<vector<int>> roomGrid;
-
-    int detectionRange ;
-    QGraphicsEllipseItem* detectionCircle;
 
     int offsetX;
     int offsetY;

@@ -1,5 +1,6 @@
 #include "combatscene.h"
 #include "game.h"
+#include "boss.h"
 
 #include <QString>
 #include <QGraphicsProxyWidget>
@@ -13,9 +14,10 @@ CombatScene::CombatScene(Game* game, QObject* parent)
     : QGraphicsScene(parent),
     game(game),
     playerHp(100),
-    bossHp(60),
+    boss(new Boss(60)),
     combatOver(false),
     playerTurn(true),
+    playerBlocking(false),
     playerHpLabel(nullptr),
     bossHpLabel(nullptr),
     turnLabel(nullptr),
@@ -36,25 +38,9 @@ void CombatScene::initialise()
     QPixmap background(":/images/Images/combat_bg_1280x720.png");
     background = background.scaled(1280, 720, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
 
-    QPixmap playerSprite(":/images/Images/skin.png");
-    playerSprite = playerSprite.scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-    QGraphicsPixmapItem* playerItem = new QGraphicsPixmapItem(playerSprite);
-    addItem(playerItem);
-    playerItem->setPos(150, 260);
-    playerItem->setZValue(1);
-
-    QPixmap bossSprite(":/images/Images/demogorgon (enemy).png");
-    bossSprite = bossSprite.scaled(220, 220, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-    QGraphicsPixmapItem* bossItem = new QGraphicsPixmapItem(bossSprite);
-    addItem(bossItem);
-    bossItem->setPos(900, 180);
-    bossItem->setZValue(1);
-
     QGraphicsPixmapItem* backgroundItem = new QGraphicsPixmapItem(background);
     addItem(backgroundItem);
-    backgroundItem->setZValue(-200);
+    backgroundItem->setZValue(-1);
 
     playerHpLabel = new QLabel("Player HP");
     bossHpLabel = new QLabel("Boss HP");
@@ -69,7 +55,7 @@ void CombatScene::initialise()
 
     bossHpBar = new QProgressBar();
     bossHpBar->setRange(0, 60);
-    bossHpBar->setValue(bossHp);
+    bossHpBar->setValue(boss->getHealth());
     bossHpBar->setFormat("%v / %m");
 
     attackButton = new QPushButton("Attack Card");
@@ -105,7 +91,7 @@ void CombatScene::initialise()
 void CombatScene::updateUi()
 {
     playerHpBar->setValue(playerHp);
-    bossHpBar->setValue(bossHp);
+    bossHpBar->setValue(boss->getHealth());
 
     playerHpLabel->setText("Player HP");
     bossHpLabel->setText("Boss HP");
@@ -209,22 +195,29 @@ void CombatScene::handleBossTurn()
 void CombatScene::bossAttack()
 {
     int action = rand() % 2;
+    int damage;
 
     if (action == 0) {
         bossActionLabel->setText("Boss Action: Claw");
-        playerHp -= 8;
+        damage = 8;
     } else {
         bossActionLabel->setText("Boss Action: Heavy Strike");
-        playerHp -= 12;
+        damage = 12;
     }
 
+    if (playerBlocking) {
+        damage /= 2;
+        playerBlocking = false;
+    }
+
+    playerHp -= damage;
     if (playerHp < 0)
         playerHp = 0;
 }
 
 bool CombatScene::checkWinLose()
 {
-    if (bossHp <= 0) {
+    if (boss->getHealth() <= 0) {
         combatOver = true;
         QMessageBox::information(nullptr, "Combat", "You Win!");
         game->openReward();
@@ -242,14 +235,12 @@ bool CombatScene::checkWinLose()
 }
 void CombatScene::applyAttackCard()
 {
-    bossHp -= 10;
-    if (bossHp < 0)
-        bossHp = 0;
+    boss->decreaseHealth(10);
 }
 
 void CombatScene::applyBlockCard()
 {
-    bossActionLabel->setText("Boss Action: Block reduced damage");
+    playerBlocking = true;
 }
 void CombatScene::applyHealCard()
 {

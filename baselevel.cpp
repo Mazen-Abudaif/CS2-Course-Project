@@ -40,27 +40,35 @@ void Baselevel::initialise(){
 
     scene->addItem(damageOverlay);
 
-    playerHpLabel = new QLabel("HP");
-    playerHpBar = new QProgressBar();
+    // setting hearts (lives)
+    QPixmap heartPixmap(":/images/Images/heart.png") ;
+    heartPixmap = heartPixmap.scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-    playerHpBar->setRange(0, 5);              // because you set player health to 5
-    playerHpBar->setValue(player->getHealth());
-    playerHpBar->setFormat("%v / %m");
+    int spacing = 22;
+    for (int i = 0; i < player->getHealth(); i++)
+    {
+        QGraphicsPixmapItem* heart = new QGraphicsPixmapItem(heartPixmap);
 
-    QGraphicsProxyWidget* labelProxy = scene->addWidget(playerHpLabel);
-    labelProxy->setPos(580, 80);
+        heart->setPos(580+i*spacing,110);
+        heart->setZValue(200);
 
-    QGraphicsProxyWidget* barProxy = scene->addWidget(playerHpBar);
-    barProxy->setPos(580, 110);
+        scene->addItem(heart);
+        hearts.push_back(heart);
+    }
 
 }
 
-void Baselevel::updateHpBar(Player* player)
+void Baselevel::updateHearts(Player *player)
 {
-    if (!playerHpBar || !player)
-        return;
+    int currentHealth = player->getHealth();
 
-    playerHpBar->setValue(player->getHealth());
+    for (int i = 0; i < hearts.size(); i++)
+    {
+        if (i < currentHealth)
+            hearts[i]->setVisible(true);
+        else
+            hearts[i]->setVisible(false);
+    }
 }
 
 void Baselevel::setBackground(QGraphicsPixmapItem* background){

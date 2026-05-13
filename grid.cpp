@@ -1,5 +1,4 @@
 #include "grid.h"
-#include "boss.h"
 #include <QBrush>
 #include <QPen>
 #include <QColor>
@@ -12,8 +11,6 @@
 Grid::Grid(QGraphicsScene* scene)
     : gamescene(scene)
 {
-    detectionRange = 3 ; // 3 tiles
-
     int gridWidth = cols * tileSize;
     int gridHeight = rows * tileSize;
 
@@ -371,7 +368,3 @@ void Grid::RemoveCard(pair<int, int> place)
         }
     }
 }
-
-
-
-

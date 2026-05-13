@@ -28,6 +28,8 @@ private:
     Level1* level_1 ;
     int current_level ;
 
+
+
 protected:
     void keyPressEvent(QKeyEvent *event) override;
 };

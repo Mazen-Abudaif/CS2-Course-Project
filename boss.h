@@ -7,8 +7,6 @@ class Boss : public Character
 public:
     Boss(int health);
     void aiPlayCard();
-
-private:
 };
 
 #endif // BOSS_H

@@ -32,6 +32,9 @@ protected:
     int row;
     int col ;
     QPixmap skin ;
+
+protected:
+    QList<Card*> deck;
     QList<Card*> hand;
 
 private:
