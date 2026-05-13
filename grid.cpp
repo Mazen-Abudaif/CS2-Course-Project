@@ -267,7 +267,7 @@ void Grid::PlaceTankyEnemy()
     gamescene->addItem(tankyEnemyCircle) ;
 }
 
-void Grid::PlaceCards(int times,CardType type, QGraphicsPixmapItem* card)
+void Grid::PlaceCards(int times,CardType type, const QPixmap& card)
 {
     for(int i=0 ; i<times ; i++)
     {
