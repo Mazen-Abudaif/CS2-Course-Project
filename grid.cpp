@@ -53,20 +53,21 @@ void Grid::SpawnTraps(int traps_no)
 
 void Grid::SpawnCards(CardType type , int number_of_cards)
 {
+    for (int i=0 ; i<number_of_cards ; i++)
+    {
     if(type==CardType::Attack)
     {
         QPixmap Attack_Card(":/images/Images/Attack_Card.png") ;
         Attack_Card = Attack_Card.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        QGraphicsPixmapItem* AttackCardItem = new QGraphicsPixmapItem(Attack_Card);
-        PlaceCards(number_of_cards,CardType::Attack,AttackCardItem) ;
+        PlaceCards(number_of_cards,CardType::Attack,Attack_Card) ;
     }
 
     if(type==CardType::Block)
     {
         QPixmap Block_Card(":/images/Images/Block_Card.png") ;
         Block_Card = Block_Card.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        QGraphicsPixmapItem* BlockCardItem = new QGraphicsPixmapItem(Block_Card);
-        PlaceCards(number_of_cards,CardType::Block,BlockCardItem) ;
+        PlaceCards(number_of_cards,CardType::Block,Block_Card) ;
+    }
     }
 }
 
@@ -266,7 +267,7 @@ void Grid::PlaceTankyEnemy()
     gamescene->addItem(tankyEnemyCircle) ;
 }
 
-void Grid::PlaceCards(int times,CardType type, QGraphicsPixmapItem* card)
+void Grid::PlaceCards(int times,CardType type, const QPixmap& card)
 {
     for(int i=0 ; i<times ; i++)
     {
@@ -277,16 +278,9 @@ void Grid::PlaceCards(int times,CardType type, QGraphicsPixmapItem* card)
     } while (row==0||col==0||row==rows-1||col==cols-1 || isCardPlaceTaken(row,col)==true) ;
 
         pair<int,int> pos ;
-        if(type== CardType::Attack)
-        {
-            pos = calcScenePosition(row,col) ;
-        }
-        if(type == CardType::Block)
-        {
-            pos = calcScenePosition(row,col) ;
-        }
+        pos = calcScenePosition(row,col) ;
 
-        QGraphicsPixmapItem *newCard = new QGraphicsPixmapItem(card->pixmap());
+        QGraphicsPixmapItem *newCard = new QGraphicsPixmapItem(card);
         int x,y;
         x = pos.first + (tileSize - newCard->pixmap().width()) / 2;
         y = pos.second + (tileSize - newCard->pixmap().height()) / 2;
@@ -303,6 +297,10 @@ void Grid::PlaceCards(int times,CardType type, QGraphicsPixmapItem* card)
         else if(type == CardType::Block)
         {
             block_card_places.push_back(pair(pair(row,col),newCard)) ;
+        }
+        else if(type==CardType::Heal)
+        {
+            heal_card_places.push_back(pair(pair(row,col),newCard)) ;
         }
         else
         {
@@ -547,6 +545,16 @@ void Grid::RemoveCard(pair<int, int> place)
             gamescene->removeItem(block_card_places.at(i).second) ;
             delete block_card_places.at(i).second ;
             block_card_places.erase(block_card_places.begin()+i) ;
+            return ;
+        }
+    }
+    for(size_t i=0 ; i<heal_card_places.size(); i++)
+    {
+        if(place==heal_card_places.at(i).first)
+        {
+            gamescene->removeItem(heal_card_places.at(i).second) ;
+            delete heal_card_places.at(i).second ;
+            heal_card_places.erase(heal_card_places.begin()+i) ;
             return ;
         }
     }
