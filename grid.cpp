@@ -17,7 +17,8 @@ Grid::Grid(QGraphicsScene* scene, bool spawnBoss)
     fastEnemyCircle(nullptr),
     tankyEnemyCircle(nullptr),
     triggeredCombatHp(60),
-    triggeredImmuneTurns(0)
+    triggeredImmuneTurns(0),
+    triggeredEnemy(nullptr)
 {
     int gridWidth = cols * tileSize;
     int gridHeight = rows * tileSize;
@@ -443,6 +444,7 @@ bool Grid::isPlayerNearby(int playerRow, int playerCol)
         int dist = abs(playerRow - boss->getRow()) + abs(playerCol - boss->getCol()) ;
         if (dist <= detectionRange)
         {
+            triggeredEnemy = boss ;
             triggeredCombatHp = 60 ;
             triggeredImmuneTurns = 0 ;
             return true ;
@@ -454,6 +456,7 @@ bool Grid::isPlayerNearby(int playerRow, int playerCol)
         int dist = abs(playerRow - fastEnemy->getRow()) + abs(playerCol - fastEnemy->getCol()) ;
         if (dist <= detectionRange)
         {
+            triggeredEnemy = fastEnemy ;
             triggeredCombatHp = 40 ;
             triggeredImmuneTurns = 0 ;
             return true ;
@@ -465,6 +468,7 @@ bool Grid::isPlayerNearby(int playerRow, int playerCol)
         int dist = abs(playerRow - tankyEnemy->getRow()) + abs(playerCol - tankyEnemy->getCol()) ;
         if (dist <= detectionRange)
         {
+            triggeredEnemy = tankyEnemy ;
             triggeredCombatHp = 120 ;
             triggeredImmuneTurns = 2 ;
             return true ;
@@ -482,6 +486,46 @@ int Grid::getTriggeredCombatHp() const
 int Grid::getTriggeredImmuneTurns() const
 {
     return triggeredImmuneTurns ;
+}
+
+void Grid::removeTriggeredEnemy()
+{
+    if (triggeredEnemy == nullptr)
+        return ;
+
+    if (triggeredEnemy == fastEnemy)
+    {
+        gamescene->removeItem(fastEnemy) ;
+        delete fastEnemy ;
+        fastEnemy = nullptr ;
+
+        if (fastEnemyCircle != nullptr)
+        {
+            gamescene->removeItem(fastEnemyCircle) ;
+            delete fastEnemyCircle ;
+            fastEnemyCircle = nullptr ;
+        }
+    }
+    else if (triggeredEnemy == tankyEnemy)
+    {
+        gamescene->removeItem(tankyEnemy) ;
+        delete tankyEnemy ;
+        tankyEnemy = nullptr ;
+
+        if (tankyEnemyCircle != nullptr)
+        {
+            gamescene->removeItem(tankyEnemyCircle) ;
+            delete tankyEnemyCircle ;
+            tankyEnemyCircle = nullptr ;
+        }
+    }
+
+    triggeredEnemy = nullptr ;
+}
+
+bool Grid::allEnemiesDefeated() const
+{
+    return fastEnemy == nullptr && tankyEnemy == nullptr ;
 }
 
 void Grid::RemoveCard(pair<int, int> place)

@@ -22,6 +22,8 @@ public:
     void openCharacterSelect();
     void openCombat();
     void openReward();
+    void onCombatWin();
+    void returnToLevel();
     void setSelectedCharacter(QString character);
     QString getSelectedCharacter() const;
     void openNextLevel() ;
