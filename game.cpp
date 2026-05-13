@@ -7,6 +7,7 @@
 #include "characterselect.h"
 #include "combatscene.h"
 #include "rewardscene.h"
+#include <QPropertyAnimation>
 
 Game::Game(int width,int height)
 {
@@ -60,7 +61,22 @@ void Game::keyPressEvent(QKeyEvent *event)
         int px = newPos.first + (room->get_tile_size() - player->pixmap().width())/2 ;
         int py = newPos.second + (room->get_tile_size() - player->pixmap().height())/2 ;
 
-        player->setScenePosition(px, py);
+        QPointF startPos = player->pos();
+        QPointF endPos(px, py);
+        int steps = 10;
+        QPointF stepSize = (endPos - startPos) / steps;
+        int* stepCount = new int(0);
+        QTimer* animationTimer = new QTimer();
+        connect(animationTimer, &QTimer::timeout, this, [=]() mutable {
+            (*stepCount)++;
+            player->setPos(player->pos() + stepSize);
+            if(*stepCount >= steps){
+                animationTimer->stop();
+                animationTimer->deleteLater();
+                delete stepCount;
+            }
+        });
+        animationTimer->start(10);
 
         for(size_t i=0 ; i <room->trap_places.size() ; i++)
         {
@@ -228,4 +244,12 @@ void Game::openLevel4()
 void Game::openLevel5()
 {
 
+}
+void Game::setSelectedCharacter(QString Character)
+{
+    this->Character = Character;
+}
+QString Game::getCharacter()
+{
+    return this->Character;
 }

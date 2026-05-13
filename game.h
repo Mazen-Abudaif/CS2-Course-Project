@@ -21,12 +21,15 @@ public:
     void openCharacterSelect();
     void openCombat();
     void openReward();
-    void openNextLevel() ;
+    void openNextLevel();
+    void setSelectedCharacter(QString Character);
+    QString getCharacter();
 
 private:
     QGraphicsScene* gamescene;
     Level1* level_1 ;
     int current_level ;
+    QString Character;
 
 
 

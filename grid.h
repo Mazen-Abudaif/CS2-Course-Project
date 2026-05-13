@@ -62,8 +62,6 @@ public:
     // function to remove cards once stepped on them
     void RemoveCard(pair<int, int> place) ;
 
-    // vector to store row and col of traps, to be able to check if player stepped on them
-    vector<pair<int,int>> trap_places;
 
 private:
     QGraphicsScene* gamescene; // the scene for the game
@@ -76,6 +74,10 @@ private:
 
     int offsetX;
     int offsetY;
+
+    Boss* boss;
+    int detectionRange;
+    QGraphicsEllipseItem* detectionCircle;
 };
 
 #endif // GRID_H
