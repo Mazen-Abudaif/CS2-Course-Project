@@ -8,8 +8,17 @@
 #include <QGraphicsProxyWidget>
 
 
-Grid::Grid(QGraphicsScene* scene)
-    : gamescene(scene)
+Grid::Grid(QGraphicsScene* scene, bool spawnBoss)
+    : gamescene(scene),
+    boss(nullptr),
+    fastEnemy(nullptr),
+    tankyEnemy(nullptr),
+    detectionCircle(nullptr),
+    fastEnemyCircle(nullptr),
+    tankyEnemyCircle(nullptr),
+    triggeredCombatHp(60),
+    triggeredImmuneTurns(0),
+    triggeredEnemy(nullptr)
 {
     int gridWidth = cols * tileSize;
     int gridHeight = rows * tileSize;
@@ -20,7 +29,15 @@ Grid::Grid(QGraphicsScene* scene)
     initialize_room();
     draw_room() ;
     gamescene->setSceneRect(0, 0, cols * tileSize, rows * tileSize);
-    Place_boss() ;
+
+    if (spawnBoss)
+        Place_boss() ;
+    else
+    {
+        PlaceFastEnemy() ;
+        PlaceTankyEnemy() ;
+    }
+
     SpawnTraps(1) ;
     SpawnCards(CardType::Attack , 1) ;
     SpawnCards(CardType::Block , 1) ;
@@ -79,8 +96,8 @@ void Grid::setTrap(int traps_no, QGraphicsPixmapItem* trap){
 
     int row, col;
     do{
-            row = (arc4random()%rows) ;
-            col = (arc4random()%cols) ;
+            row = (rand()%rows) ;
+            col = (rand()%cols) ;
     } while (row==0||col==0||row==rows-1||col==cols-1 || isCardPlaceTaken(row,col)==true) ;
 
     // saving trap place
@@ -129,12 +146,28 @@ bool Grid::isCardPlaceTaken(int row,int col)
         i++ ;
     }
 
-    int rowDiff = row - boss->getRow() ;
-    int colDiff = col - boss->getCol() ;
-
-    if((rowDiff*rowDiff + colDiff*colDiff) <= (detectionRange*detectionRange))
+    if (boss != nullptr)
     {
-        return true ;
+        int rowDiff = row - boss->getRow() ;
+        int colDiff = col - boss->getCol() ;
+        if ((rowDiff*rowDiff + colDiff*colDiff) <= (detectionRange*detectionRange))
+            return true ;
+    }
+
+    if (fastEnemy != nullptr)
+    {
+        int rowDiff = row - fastEnemy->getRow() ;
+        int colDiff = col - fastEnemy->getCol() ;
+        if ((rowDiff*rowDiff + colDiff*colDiff) <= (detectionRange*detectionRange))
+            return true ;
+    }
+
+    if (tankyEnemy != nullptr)
+    {
+        int rowDiff = row - tankyEnemy->getRow() ;
+        int colDiff = col - tankyEnemy->getCol() ;
+        if ((rowDiff*rowDiff + colDiff*colDiff) <= (detectionRange*detectionRange))
+            return true ;
     }
 
     return false;
@@ -168,14 +201,80 @@ void Grid::Place_boss()
     createDetectionCircle(gamescene,this) ;
 }
 
-void Grid::PlaceCards(int times,CardType type, const QPixmap& card)
+void Grid::PlaceFastEnemy()
+{
+    fastEnemy = new Boss(40, BossType::Fast) ;
+
+    int row = rows / 4 ;
+    int col = 3 * cols / 4 ;
+
+    fastEnemy->setGridPosition(row, col) ;
+
+    pair<int,int> pos = calcScenePosition(row, col) ;
+
+    QPixmap FastPixmap(":/images/Images/demogorgon (enemy).png") ;
+    FastPixmap = FastPixmap.scaled(35, 35, Qt::KeepAspectRatio, Qt::SmoothTransformation) ;
+    fastEnemy->setPixmap(FastPixmap) ;
+
+    int tx = pos.first + (tileSize - fastEnemy->pixmap().width()) / 2 ;
+    int ty = pos.second + (tileSize - fastEnemy->pixmap().height()) / 2 ;
+
+    fastEnemy->setPos(tx, ty) ;
+    gamescene->addItem(fastEnemy) ;
+    fastEnemy->setZValue(2) ;
+
+    int radius = detectionRange * tileSize ;
+    int centerX = pos.first + tileSize / 2 ;
+    int centerY = pos.second + tileSize / 2 ;
+
+    fastEnemyCircle = new QGraphicsEllipseItem(centerX - radius, centerY - radius, radius * 2, radius * 2) ;
+    fastEnemyCircle->setBrush(QColor(0, 150, 255, 40)) ; // blue tint for fast enemy
+    fastEnemyCircle->setPen(Qt::NoPen) ;
+    fastEnemyCircle->setZValue(1) ;
+    gamescene->addItem(fastEnemyCircle) ;
+}
+
+void Grid::PlaceTankyEnemy()
+{
+    tankyEnemy = new Boss(120, BossType::Tanky) ;
+
+    int row = 3 * rows / 4 ;
+    int col = cols / 4 ;
+
+    tankyEnemy->setGridPosition(row, col) ;
+
+    pair<int,int> pos = calcScenePosition(row, col) ;
+
+    QPixmap TankyPixmap(":/images/Images/demogorgon (enemy).png") ;
+    TankyPixmap = TankyPixmap.scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation) ;
+    tankyEnemy->setPixmap(TankyPixmap) ;
+
+    int tx = pos.first + (tileSize - tankyEnemy->pixmap().width()) / 2 ;
+    int ty = pos.second + (tileSize - tankyEnemy->pixmap().height()) / 2 ;
+
+    tankyEnemy->setPos(tx, ty) ;
+    gamescene->addItem(tankyEnemy) ;
+    tankyEnemy->setZValue(2) ;
+
+    int radius = detectionRange * tileSize ;
+    int centerX = pos.first + tileSize / 2 ;
+    int centerY = pos.second + tileSize / 2 ;
+
+    tankyEnemyCircle = new QGraphicsEllipseItem(centerX - radius, centerY - radius, radius * 2, radius * 2) ;
+    tankyEnemyCircle->setBrush(QColor(255, 100, 0, 40)) ; // orange tint for tanky enemy
+    tankyEnemyCircle->setPen(Qt::NoPen) ;
+    tankyEnemyCircle->setZValue(1) ;
+    gamescene->addItem(tankyEnemyCircle) ;
+}
+
+void Grid::PlaceCards(int times,CardType type, QGraphicsPixmapItem* card)
 {
     for(int i=0 ; i<times ; i++)
     {
     int row, col;
     do{
-        row = (arc4random()%rows) ;
-        col = (arc4random()%cols) ;
+        row = (rand()%rows) ;
+        col = (rand()%cols) ;
     } while (row==0||col==0||row==rows-1||col==cols-1 || isCardPlaceTaken(row,col)==true) ;
 
         pair<int,int> pos ;
@@ -336,11 +435,95 @@ void Grid::createDetectionCircle(QGraphicsScene* scene, Grid* room)
     scene->addItem(detectionCircle);
 }
 
-bool Grid:: isPlayerNearby(int playerRow, int playerCol)
+bool Grid::isPlayerNearby(int playerRow, int playerCol)
 {
-    int dist = abs(playerRow - boss->getRow()) + abs(playerCol - boss->getCol() ) ;
+    if (boss != nullptr)
+    {
+        int dist = abs(playerRow - boss->getRow()) + abs(playerCol - boss->getCol()) ;
+        if (dist <= detectionRange)
+        {
+            triggeredEnemy = boss ;
+            triggeredCombatHp = 60 ;
+            triggeredImmuneTurns = 0 ;
+            return true ;
+        }
+    }
 
-    return dist<= detectionRange ;
+    if (fastEnemy != nullptr)
+    {
+        int dist = abs(playerRow - fastEnemy->getRow()) + abs(playerCol - fastEnemy->getCol()) ;
+        if (dist <= detectionRange)
+        {
+            triggeredEnemy = fastEnemy ;
+            triggeredCombatHp = 40 ;
+            triggeredImmuneTurns = 0 ;
+            return true ;
+        }
+    }
+
+    if (tankyEnemy != nullptr)
+    {
+        int dist = abs(playerRow - tankyEnemy->getRow()) + abs(playerCol - tankyEnemy->getCol()) ;
+        if (dist <= detectionRange)
+        {
+            triggeredEnemy = tankyEnemy ;
+            triggeredCombatHp = 120 ;
+            triggeredImmuneTurns = 2 ;
+            return true ;
+        }
+    }
+
+    return false ;
+}
+
+int Grid::getTriggeredCombatHp() const
+{
+    return triggeredCombatHp ;
+}
+
+int Grid::getTriggeredImmuneTurns() const
+{
+    return triggeredImmuneTurns ;
+}
+
+void Grid::removeTriggeredEnemy()
+{
+    if (triggeredEnemy == nullptr)
+        return ;
+
+    if (triggeredEnemy == fastEnemy)
+    {
+        gamescene->removeItem(fastEnemy) ;
+        delete fastEnemy ;
+        fastEnemy = nullptr ;
+
+        if (fastEnemyCircle != nullptr)
+        {
+            gamescene->removeItem(fastEnemyCircle) ;
+            delete fastEnemyCircle ;
+            fastEnemyCircle = nullptr ;
+        }
+    }
+    else if (triggeredEnemy == tankyEnemy)
+    {
+        gamescene->removeItem(tankyEnemy) ;
+        delete tankyEnemy ;
+        tankyEnemy = nullptr ;
+
+        if (tankyEnemyCircle != nullptr)
+        {
+            gamescene->removeItem(tankyEnemyCircle) ;
+            delete tankyEnemyCircle ;
+            tankyEnemyCircle = nullptr ;
+        }
+    }
+
+    triggeredEnemy = nullptr ;
+}
+
+bool Grid::allEnemiesDefeated() const
+{
+    return fastEnemy == nullptr && tankyEnemy == nullptr ;
 }
 
 void Grid::RemoveCard(pair<int, int> place)

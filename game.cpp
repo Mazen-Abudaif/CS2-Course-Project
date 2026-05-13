@@ -3,15 +3,17 @@
 #include "blockcard.h"
 #include "mainmenu.h"
 #include "level1.h"
+#include "level4.h"
 #include <QMessageBox>
 #include "characterselect.h"
 #include "combatscene.h"
 #include "rewardscene.h"
+#include <QPropertyAnimation>
 
 Game::Game(int width,int height)
 {
     current_level = 1 ;
-    selectedCharacter = "" ;
+    Character = "" ;
     //disable scroll wheel horrizontly and verticly
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -61,7 +63,22 @@ void Game::keyPressEvent(QKeyEvent *event)
         int px = newPos.first + (room->get_tile_size() - player->pixmap().width())/2 ;
         int py = newPos.second + (room->get_tile_size() - player->pixmap().height())/2 ;
 
-        player->setScenePosition(px, py);
+        QPointF startPos = player->pos();
+        QPointF endPos(px, py);
+        int steps = 10;
+        QPointF stepSize = (endPos - startPos) / steps;
+        int* stepCount = new int(0);
+        QTimer* animationTimer = new QTimer();
+        connect(animationTimer, &QTimer::timeout, this, [=]() mutable {
+            (*stepCount)++;
+            player->setPos(player->pos() + stepSize);
+            if(*stepCount >= steps){
+                animationTimer->stop();
+                animationTimer->deleteLater();
+                delete stepCount;
+            }
+        });
+        animationTimer->start(10);
 
         for(size_t i=0 ; i <room->trap_places.size() ; i++)
         {
@@ -167,30 +184,63 @@ void Game::openCharacterSelect()
 
 void Game::setSelectedCharacter(QString character)
 {
-    selectedCharacter = character ;
+    Character = character ;
 }
 
 QString Game::getSelectedCharacter() const
 {
-    return selectedCharacter ;
+    return Character ;
 }
 
-// opens combat scene
+// opens combat scene — reads triggered enemy stats directly from the room
 void Game::openCombat()
 {
     int bossHp = 60 ;
     int bossImmuneTurns = 0 ;
 
-    if (current_level == 4)
+    if (level_1 != nullptr && level_1->getRoom() != nullptr)
     {
-        bossHp = 120 ;
-        bossImmuneTurns = 2 ;
+        bossHp = level_1->getRoom()->getTriggeredCombatHp() ;
+        bossImmuneTurns = level_1->getRoom()->getTriggeredImmuneTurns() ;
     }
 
     CombatScene* combatScene = new CombatScene(this, bossHp, bossImmuneTurns);
     combatScene->initialise();
     this->setScene(combatScene);
 }
+// called on combat win — removes the defeated enemy and checks if more remain
+void Game::onCombatWin()
+{
+    if (level_1 != nullptr && level_1->getRoom() != nullptr)
+    {
+        level_1->getRoom()->removeTriggeredEnemy() ;
+
+        if (!level_1->getRoom()->allEnemiesDefeated())
+        {
+            returnToLevel() ;
+            return ;
+        }
+    }
+
+    openReward() ;
+}
+
+// called on combat loss — restarts the appropriate level
+void Game::onCombatLose()
+{
+    if (dynamic_cast<Level4*>(level_1) != nullptr)
+        openLevel4() ;
+    else
+        openLevel1() ;
+}
+
+// returns to the current level scene without recreating it
+void Game::returnToLevel()
+{
+    this->setScene(gamescene) ;
+    this->setFocus() ;
+}
+
 // opens reward scene after player wins combat
 
 void Game::openReward()
@@ -244,7 +294,20 @@ void Game::openLevel3()
 }
 void Game::openLevel4()
 {
+    if (level_1)
+    {
+        delete level_1 ;
+        level_1 = nullptr ;
+    }
 
+    gamescene = new QGraphicsScene() ;
+    gamescene->setSceneRect(0, 0, 1280, 720) ;
+
+    level_1 = new Level4(gamescene, this) ;
+    level_1->initialise() ;
+
+    this->setScene(gamescene) ;
+    this->setFocus() ;
 }
 void Game::openLevel5()
 {

@@ -11,7 +11,7 @@ Player::Player(QString characterType) : Character(100) {
         deck.append(new Blockcard(5));
         deck.append(new Consumable("Fireball",20));
 
-        skin = QPixmap(":/images/Images/skin.png");
+        skin = QPixmap(":/images/Images/Mage.png");
 
         int scaledWidth = skin.width() * 200 / skin.height();
         skin = skin.scaled(50, 50, Qt::KeepAspectRatio);
@@ -23,7 +23,7 @@ Player::Player(QString characterType) : Character(100) {
         deck.append(new Blockcard(20));
         deck.append(new Consumable("Shield",25));
 
-        skin = QPixmap(":/images/Images/skin.png");
+        skin = QPixmap(":/images/Images/Warrior.png");
 
         int scaledWidth = skin.width() * 200 / skin.height();
         skin = skin.scaled(50, 50, Qt::KeepAspectRatio);

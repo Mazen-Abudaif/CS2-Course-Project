@@ -28,6 +28,8 @@ CombatScene::CombatScene(Game* game, int bossMaxHp, int immuneTurns, QObject* pa
     selectedCardLabel(nullptr),
     playerHpBar(nullptr),
     bossHpBar(nullptr),
+    playerSprite(nullptr),
+    enemySprite(nullptr),
     attackButton(nullptr),
     healButton(nullptr),
     blockButton(nullptr),
@@ -45,6 +47,15 @@ void CombatScene::initialise()
     QGraphicsPixmapItem* backgroundItem = new QGraphicsPixmapItem(background);
     addItem(backgroundItem);
     backgroundItem->setZValue(-1);
+
+
+    // enemy sprite — right side of the scene
+    QPixmap enemyPixmap(":/images/Images/demogorgon (enemy).png") ;
+    enemyPixmap = enemyPixmap.scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation) ;
+    enemySprite = new QGraphicsPixmapItem(enemyPixmap) ;
+    enemySprite->setPos(950, 260) ;
+    enemySprite->setZValue(1) ;
+    addItem(enemySprite) ;
 
     playerHpLabel = new QLabel("Player HP");
     bossHpLabel = new QLabel("Boss HP");
@@ -103,6 +114,24 @@ void CombatScene::initialise()
     connect(healButton, &QPushButton::clicked, this, &CombatScene::playHeal);
     connect(blockButton, &QPushButton::clicked, this, &CombatScene::playBlock);
 
+    // Player sprite on the left
+    QString characterType = game->getSelectedCharacter();
+    QString spritePath = (characterType == "mage") ? ":/images/Images/Mage.png" : ":/images/Images/Warrior.png";
+    QPixmap playerPixmap(spritePath);
+    playerPixmap = playerPixmap.scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    playerSprite = new QGraphicsPixmapItem(playerPixmap);
+    playerSprite->setPos(150, 300);
+    playerSprite->setZValue(1);
+    addItem(playerSprite);
+
+    // Boss sprite on the right
+    QPixmap bossPixmap(":/images/Images/demogorgon (enemy).png");
+    bossPixmap = bossPixmap.scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QGraphicsPixmapItem* bossSprite = new QGraphicsPixmapItem(bossPixmap);
+    bossSprite->setPos(950, 300);
+    bossSprite->setZValue(1);
+    addItem(bossSprite);
+
     updateUi();
 }
 
@@ -135,6 +164,42 @@ void CombatScene::playStrike()
         return;
 
     selectedCardLabel->setText("Selected Card: Attack Card");
+
+    // Load the right projectile based on character
+    QString characterType = game->getSelectedCharacter();
+    QString projectilePath = (characterType == "mage") ? ":/images/Images/mageProjectile.png" : ":/images/Images/warriorProjectile.png";
+    QPixmap projectilePixmap(projectilePath);
+    if (characterType == "mage")
+        projectilePixmap = projectilePixmap.scaled(110, 110, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    else
+        projectilePixmap = projectilePixmap.scaled(330, 440, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QGraphicsPixmapItem* projectile = new QGraphicsPixmapItem(projectilePixmap);
+    int projectileY = (characterType == "mage") ? 340 : 150;
+    projectile->setPos(150, projectileY);
+    projectile->setZValue(5);
+    addItem(projectile);
+
+    // Animate projectile from player to boss
+    int* stepCount = new int(0);
+    int steps = 40;
+    QPointF startPos(150, projectileY);
+    QPointF endPos(800, projectileY);
+    QPointF stepSize = (endPos - startPos) / steps;
+
+    QTimer* projectileTimer = new QTimer();
+    connect(projectileTimer, &QTimer::timeout, this, [=]() mutable {
+        (*stepCount)++;
+        projectile->setPos(projectile->pos() + stepSize);
+        if (*stepCount >= steps) {
+            projectileTimer->stop();
+            projectileTimer->deleteLater();
+            removeItem(projectile);
+            delete projectile;
+            delete stepCount;
+        }
+    });
+    projectileTimer->start(10);
+
     applyAttackCard();
 
     playerTurn = false;
@@ -254,14 +319,14 @@ bool CombatScene::checkWinLose()
     if (boss->getHealth() <= 0) {
         combatOver = true;
         QMessageBox::information(nullptr, "Combat", "You Win!");
-        game->openReward();
+        game->onCombatWin();
         return true;
     }
 
     if (playerHp <= 0) {
         combatOver = true;
         QMessageBox::information(nullptr, "Combat", "You Lose!");
-        game->openLevel1();
+        game->onCombatLose();
         return true;
     }
 
@@ -296,6 +361,9 @@ void CombatScene::playAbility()
 
     selectedCardLabel->setText("Selected Card: Ability");
     applyAbility();
+
+    if (!abilityUsed)  // ability was blocked by immunity, don't end turn
+        return;
 
     playerTurn = false;
     updateUi();
