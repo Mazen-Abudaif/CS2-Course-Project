@@ -16,6 +16,7 @@ class Baselevel : public QObject
 public:
     Baselevel(QGraphicsScene* scene, Game* game); // constructor
     virtual void initialise() = 0; // makes game a purely virtual function
+    virtual void setupRoom() ; // override in subclasses to change enemy setup
 
     void setBackground(QGraphicsPixmapItem* background);
 

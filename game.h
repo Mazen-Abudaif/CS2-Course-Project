@@ -4,7 +4,8 @@
 #include <QGraphicsScene>
 #include <QWidget>
 #include <QKeyEvent>
-#include "level1.h"
+#include <QString>
+#include "baselevel.h"
 
 class Game : public QGraphicsView {
     Q_OBJECT //needed for qt
@@ -21,13 +22,16 @@ public:
     void openCharacterSelect();
     void openCombat();
     void openReward();
-    void openNextLevel();
-    void setSelectedCharacter(QString Character);
-    QString getCharacter();
+    void onCombatWin();
+    void onCombatLose();
+    void returnToLevel();
+    void setSelectedCharacter(QString character);
+    QString getSelectedCharacter() const;
+    void openNextLevel() ;
 
 private:
     QGraphicsScene* gamescene;
-    Level1* level_1 ;
+    Baselevel* level_1 ;
     int current_level ;
     QString Character;
 

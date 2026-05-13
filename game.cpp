@@ -3,6 +3,7 @@
 #include "blockcard.h"
 #include "mainmenu.h"
 #include "level1.h"
+#include "level4.h"
 #include <QMessageBox>
 #include "characterselect.h"
 #include "combatscene.h"
@@ -12,6 +13,7 @@
 Game::Game(int width,int height)
 {
     current_level = 1 ;
+    selectedCharacter = "" ;
     //disable scroll wheel horrizontly and verticly
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -180,12 +182,65 @@ void Game::openCharacterSelect()
     this->setScene(characterSelectScene);
 }
 
-// opens combat scene
-void Game::openCombat() {
-    CombatScene* combatScene = new CombatScene(this);
+void Game::setSelectedCharacter(QString character)
+{
+    selectedCharacter = character ;
+}
+
+QString Game::getSelectedCharacter() const
+{
+    return selectedCharacter ;
+}
+
+// opens combat scene — reads triggered enemy stats directly from the room
+void Game::openCombat()
+{
+    int bossHp = 60 ;
+    int bossImmuneTurns = 0 ;
+
+    if (level_1 != nullptr && level_1->getRoom() != nullptr)
+    {
+        bossHp = level_1->getRoom()->getTriggeredCombatHp() ;
+        bossImmuneTurns = level_1->getRoom()->getTriggeredImmuneTurns() ;
+    }
+
+    CombatScene* combatScene = new CombatScene(this, bossHp, bossImmuneTurns);
     combatScene->initialise();
     this->setScene(combatScene);
 }
+// called on combat win — removes the defeated enemy and checks if more remain
+void Game::onCombatWin()
+{
+    if (level_1 != nullptr && level_1->getRoom() != nullptr)
+    {
+        level_1->getRoom()->removeTriggeredEnemy() ;
+
+        if (!level_1->getRoom()->allEnemiesDefeated())
+        {
+            returnToLevel() ;
+            return ;
+        }
+    }
+
+    openReward() ;
+}
+
+// called on combat loss — restarts the appropriate level
+void Game::onCombatLose()
+{
+    if (current_level == 4)
+        openLevel4() ;
+    else
+        openLevel1() ;
+}
+
+// returns to the current level scene without recreating it
+void Game::returnToLevel()
+{
+    this->setScene(gamescene) ;
+    this->setFocus() ;
+}
+
 // opens reward scene after player wins combat
 
 void Game::openReward()
@@ -239,7 +294,20 @@ void Game::openLevel3()
 }
 void Game::openLevel4()
 {
+    if (level_1)
+    {
+        delete level_1 ;
+        level_1 = nullptr ;
+    }
 
+    gamescene = new QGraphicsScene() ;
+    gamescene->setSceneRect(0, 0, 1280, 720) ;
+
+    level_1 = new Level4(gamescene, this) ;
+    level_1->initialise() ;
+
+    this->setScene(gamescene) ;
+    this->setFocus() ;
 }
 void Game::openLevel5()
 {

@@ -4,7 +4,7 @@
 #include "consumable.h"
 #include <cstdlib>
 
-Boss::Boss(int health) : Character(health)
+Boss::Boss(int health, BossType type) : Character(health), type(type)
 {
     deck.append(new Attackcard(50));
     deck.append(new Blockcard(100));
@@ -16,4 +16,9 @@ void Boss::aiPlayCard()
     if (deck.isEmpty())
         return;
     playCard(rand() % deck.size());
+}
+
+BossType Boss::getType() const
+{
+    return type ;
 }
