@@ -32,6 +32,7 @@ HEADERS += \
     blockcard.h \
     boss.h \
     card.h \
+    cardtype.h \
     character.h \
     combatscene.h \
     characterselect.h \

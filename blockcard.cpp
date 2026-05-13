@@ -1,6 +1,6 @@
 #include "blockcard.h"
 
-Blockcard::Blockcard(int effectValue) : Card("Block", "block", effectValue)
+Blockcard::Blockcard(int effectValue) : Card("block", CardType::Block, effectValue)
 {
 
 }

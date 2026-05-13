@@ -17,12 +17,5 @@ void Level1::initialise(){
 
     Baselevel::initialise();
     scene->setSceneRect(0, 0, 1280, 720);
-
-    QPushButton* combatButton = new QPushButton("Start Combat"); //placeholder until movement is implemented
-    getScene()->addWidget(combatButton)->setPos(1000, 600);
-
-    connect(combatButton, &QPushButton::clicked, [this]() {
-        getGame()->openCombat();
-    });
 }
 
