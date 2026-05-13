@@ -13,8 +13,7 @@ void Level4::setupRoom()
 
 void Level4::initialise()
 {
-    // TODO: replace with a level 4 background when available
-    QPixmap backgroundpixmap(":/images/Images/level 1_background.png") ;
+    QPixmap backgroundpixmap(":/images/Images/level4_background.png") ;
     QSize targetSize(1280, 720) ;
     QPixmap scaledPixmap = backgroundpixmap.scaled(targetSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation) ;
     QGraphicsPixmapItem* background = new QGraphicsPixmapItem(scaledPixmap) ;

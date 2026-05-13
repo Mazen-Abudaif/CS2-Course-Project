@@ -55,6 +55,10 @@ public:
     int getTriggeredCombatHp() const ;
     int getTriggeredImmuneTurns() const ;
 
+    // level 4 enemy management
+    void removeTriggeredEnemy() ;
+    bool allEnemiesDefeated() const ;
+
     // function to create card collectibles and place them
     void PlaceCards(int times, CardType type , QGraphicsPixmapItem* card) ;
 
@@ -84,6 +88,7 @@ private:
 
     int triggeredCombatHp ;
     int triggeredImmuneTurns ;
+    Boss* triggeredEnemy ;
 
     static const int rows = 15;
     static const int cols = 20;

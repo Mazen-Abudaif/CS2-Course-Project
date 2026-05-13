@@ -10,5 +10,6 @@
         <file>Images/card_pic.png</file>
         <file>Images/Block_Card.png</file>
         <file>Images/Attack_Card.png</file>
+        <file>Images/level4_background.png</file>
     </qresource>
 </RCC>

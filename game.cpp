@@ -192,6 +192,30 @@ void Game::openCombat()
     combatScene->initialise();
     this->setScene(combatScene);
 }
+// called on combat win — for level 4 removes defeated enemy and checks if all are gone
+void Game::onCombatWin()
+{
+    if (current_level == 4 && level_1 != nullptr)
+    {
+        level_1->getRoom()->removeTriggeredEnemy() ;
+
+        if (!level_1->getRoom()->allEnemiesDefeated())
+        {
+            returnToLevel() ;
+            return ;
+        }
+    }
+
+    openReward() ;
+}
+
+// returns to the current level scene without recreating it
+void Game::returnToLevel()
+{
+    this->setScene(gamescene) ;
+    this->setFocus() ;
+}
+
 // opens reward scene after player wins combat
 
 void Game::openReward()

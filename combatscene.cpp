@@ -272,7 +272,7 @@ bool CombatScene::checkWinLose()
     if (boss->getHealth() <= 0) {
         combatOver = true;
         QMessageBox::information(nullptr, "Combat", "You Win!");
-        game->openReward();
+        game->onCombatWin();
         return true;
     }
 
