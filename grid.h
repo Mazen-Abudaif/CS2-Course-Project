@@ -75,6 +75,7 @@ public:
     // function to remove cards once stepped on them
     void RemoveCard(pair<int, int> place) ;
 
+
 private:
     QGraphicsScene* gamescene; // the scene for the game
     int detectionRange = 2 ;
@@ -98,6 +99,10 @@ private:
 
     int offsetX;
     int offsetY;
+
+    Boss* boss;
+    int detectionRange;
+    QGraphicsEllipseItem* detectionCircle;
 };
 
 #endif // GRID_H

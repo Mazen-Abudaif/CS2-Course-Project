@@ -95,8 +95,8 @@ void Grid::setTrap(int traps_no, QGraphicsPixmapItem* trap){
 
     int row, col;
     do{
-            row = (arc4random()%rows) ;
-            col = (arc4random()%cols) ;
+            row = (rand()%rows) ;
+            col = (rand()%cols) ;
     } while (row==0||col==0||row==rows-1||col==cols-1 || isCardPlaceTaken(row,col)==true) ;
 
     // saving trap place
@@ -272,8 +272,8 @@ void Grid::PlaceCards(int times,CardType type, QGraphicsPixmapItem* card)
     {
     int row, col;
     do{
-        row = (arc4random()%rows) ;
-        col = (arc4random()%cols) ;
+        row = (rand()%rows) ;
+        col = (rand()%cols) ;
     } while (row==0||col==0||row==rows-1||col==cols-1 || isCardPlaceTaken(row,col)==true) ;
 
         pair<int,int> pos ;

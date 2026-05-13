@@ -18,7 +18,7 @@ void Baselevel::initialise(){
     setupRoom() ;
 
     // creating player
-    player = new Player("mage");
+    player = new Player(game->getCharacter());
     scene->addItem(player);
     player -> setHealth(5) ; // setting health of the player
 

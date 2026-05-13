@@ -33,7 +33,7 @@ private:
     QGraphicsScene* gamescene;
     Baselevel* level_1 ;
     int current_level ;
-    QString selectedCharacter;
+    QString Character;
 
 
 

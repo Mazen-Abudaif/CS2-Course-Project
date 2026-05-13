@@ -10,6 +10,10 @@
         <file>Images/card_pic.png</file>
         <file>Images/Block_Card.png</file>
         <file>Images/Attack_Card.png</file>
+        <file>Images/Mage.png</file>
+        <file>Images/Warrior.png</file>
+        <file>Images/mageProjectile.png</file>
+        <file>Images/warriorProjectile.png</file>
         <file>Images/level4_background.png</file>
     </qresource>
 </RCC>
