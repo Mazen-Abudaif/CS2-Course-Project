@@ -176,13 +176,13 @@ QString Game::getSelectedCharacter() const
     return selectedCharacter ;
 }
 
-// opens combat scene — for level 4 reads triggered enemy stats from the room
+// opens combat scene — reads triggered enemy stats directly from the room
 void Game::openCombat()
 {
     int bossHp = 60 ;
     int bossImmuneTurns = 0 ;
 
-    if (current_level == 4 && level_1 != nullptr)
+    if (level_1 != nullptr && level_1->getRoom() != nullptr)
     {
         bossHp = level_1->getRoom()->getTriggeredCombatHp() ;
         bossImmuneTurns = level_1->getRoom()->getTriggeredImmuneTurns() ;
@@ -207,6 +207,15 @@ void Game::onCombatWin()
     }
 
     openReward() ;
+}
+
+// called on combat loss — restarts the appropriate level
+void Game::onCombatLose()
+{
+    if (current_level == 4)
+        openLevel4() ;
+    else
+        openLevel1() ;
 }
 
 // returns to the current level scene without recreating it

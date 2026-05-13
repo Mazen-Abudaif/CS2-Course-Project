@@ -279,7 +279,7 @@ bool CombatScene::checkWinLose()
     if (playerHp <= 0) {
         combatOver = true;
         QMessageBox::information(nullptr, "Combat", "You Lose!");
-        game->openLevel1();
+        game->onCombatLose();
         return true;
     }
 
