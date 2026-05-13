@@ -23,6 +23,7 @@ public:
     void openCombat();
     void openReward();
     void onCombatWin();
+    void onCombatLose();
     void returnToLevel();
     void setSelectedCharacter(QString character);
     QString getSelectedCharacter() const;
