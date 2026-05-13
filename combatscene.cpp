@@ -218,7 +218,8 @@ void CombatScene::bossAttack()
 {
     if (bossImmuneTurns > 0)
     {
-        bossActionLabel->setText("Boss is immune! (" + QString::number(bossImmuneTurns) + " turns left)");
+        QString turnsText = (bossImmuneTurns == 1) ? "1 turn left" : QString::number(bossImmuneTurns) + " turns left";
+        bossActionLabel->setText("Boss is immune! (" + turnsText + ")");
         bossImmuneTurns--;
         return;
     }
@@ -279,6 +280,7 @@ void CombatScene::applyAttackCard()
 void CombatScene::applyBlockCard()
 {
     playerBlocking = true;
+    bossActionLabel->setText("Boss Action: Blocked — next hit halved");
 }
 void CombatScene::applyHealCard()
 {
@@ -294,9 +296,6 @@ void CombatScene::playAbility()
 
     selectedCardLabel->setText("Selected Card: Ability");
     applyAbility();
-
-    abilityUsed = true;
-    abilityButton->setEnabled(false);
 
     playerTurn = false;
     updateUi();
@@ -319,6 +318,8 @@ void CombatScene::applyAbility()
             return;
         }
         boss->decreaseHealth(20);
+        abilityUsed = true;
+        abilityButton->setEnabled(false);
     }
     else if (character == "Warrior")
     {
@@ -329,5 +330,7 @@ void CombatScene::applyAbility()
         }
         boss->decreaseHealth(8);
         playerBlocking = true;
+        abilityUsed = true;
+        abilityButton->setEnabled(false);
     }
 }
