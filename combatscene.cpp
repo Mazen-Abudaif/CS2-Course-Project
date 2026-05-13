@@ -31,7 +31,9 @@ CombatScene::CombatScene(Game* game, int bossMaxHp, int immuneTurns, QObject* pa
     attackButton(nullptr),
     healButton(nullptr),
     blockButton(nullptr),
-    abilityButton(nullptr)
+    abilityButton(nullptr),
+    playerSprite(nullptr),
+    enemySprite(nullptr)
 {
 }
 
@@ -45,6 +47,22 @@ void CombatScene::initialise()
     QGraphicsPixmapItem* backgroundItem = new QGraphicsPixmapItem(background);
     addItem(backgroundItem);
     backgroundItem->setZValue(-1);
+
+    // player sprite — left side of the scene
+    QPixmap playerPixmap(":/images/Images/skin.png") ;
+    playerPixmap = playerPixmap.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation) ;
+    playerSprite = new QGraphicsPixmapItem(playerPixmap) ;
+    playerSprite->setPos(150, 280) ;
+    playerSprite->setZValue(1) ;
+    addItem(playerSprite) ;
+
+    // enemy sprite — right side of the scene
+    QPixmap enemyPixmap(":/images/Images/demogorgon (enemy).png") ;
+    enemyPixmap = enemyPixmap.scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation) ;
+    enemySprite = new QGraphicsPixmapItem(enemyPixmap) ;
+    enemySprite->setPos(950, 260) ;
+    enemySprite->setZValue(1) ;
+    addItem(enemySprite) ;
 
     playerHpLabel = new QLabel("Player HP");
     bossHpLabel = new QLabel("Boss HP");
@@ -296,6 +314,9 @@ void CombatScene::playAbility()
 
     selectedCardLabel->setText("Selected Card: Ability");
     applyAbility();
+
+    if (!abilityUsed)  // ability was blocked by immunity, don't end turn
+        return;
 
     playerTurn = false;
     updateUi();

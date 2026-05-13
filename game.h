@@ -5,7 +5,7 @@
 #include <QWidget>
 #include <QKeyEvent>
 #include <QString>
-#include "level1.h"
+#include "baselevel.h"
 
 class Game : public QGraphicsView {
     Q_OBJECT //needed for qt
@@ -28,7 +28,7 @@ public:
 
 private:
     QGraphicsScene* gamescene;
-    Level1* level_1 ;
+    Baselevel* level_1 ;
     int current_level ;
     QString selectedCharacter;
 

@@ -3,6 +3,7 @@
 #include "blockcard.h"
 #include "mainmenu.h"
 #include "level1.h"
+#include "level4.h"
 #include <QMessageBox>
 #include "characterselect.h"
 #include "combatscene.h"
@@ -175,16 +176,16 @@ QString Game::getSelectedCharacter() const
     return selectedCharacter ;
 }
 
-// opens combat scene
+// opens combat scene — for level 4 reads triggered enemy stats from the room
 void Game::openCombat()
 {
     int bossHp = 60 ;
     int bossImmuneTurns = 0 ;
 
-    if (current_level == 4)
+    if (current_level == 4 && level_1 != nullptr)
     {
-        bossHp = 120 ;
-        bossImmuneTurns = 2 ;
+        bossHp = level_1->getRoom()->getTriggeredCombatHp() ;
+        bossImmuneTurns = level_1->getRoom()->getTriggeredImmuneTurns() ;
     }
 
     CombatScene* combatScene = new CombatScene(this, bossHp, bossImmuneTurns);
@@ -244,7 +245,20 @@ void Game::openLevel3()
 }
 void Game::openLevel4()
 {
+    if (level_1)
+    {
+        delete level_1 ;
+        level_1 = nullptr ;
+    }
 
+    gamescene = new QGraphicsScene() ;
+    gamescene->setSceneRect(0, 0, 1280, 720) ;
+
+    level_1 = new Level4(gamescene, this) ;
+    level_1->initialise() ;
+
+    this->setScene(gamescene) ;
+    this->setFocus() ;
 }
 void Game::openLevel5()
 {
