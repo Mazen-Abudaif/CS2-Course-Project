@@ -14,7 +14,7 @@ using namespace std;
 class Grid
 {
 public:
-    Grid(QGraphicsScene* scene, bool spawnBoss = true) ; // the parametrized constructor
+    Grid(QGraphicsScene* scene, bool spawnBoss = true, bool level4Layout = false) ; // the parametrized constructor
 
     // functions to spawn the items
     void SpawnTraps(int traps_no) ;
@@ -100,6 +100,7 @@ private:
 
     int offsetX;
     int offsetY;
+    bool level4Layout;
 
 
 };

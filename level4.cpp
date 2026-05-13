@@ -1,14 +1,18 @@
 #include "level4.h"
 #include "game.h"
+#include "cardtype.h"
 #include <QGraphicsPixmapItem>
 
 Level4::Level4(QGraphicsScene* scene, Game* game) : Baselevel(scene, game) {}
 
 void Level4::setupRoom()
 {
-    // level 4 has two enemy types instead of the regular boss
-    // PlaceFastEnemy and PlaceTankyEnemy are called inside the Grid constructor
-    room = new Grid(scene, false) ;
+    // level4Layout=true adds interior wall barriers in initialize_room before anything spawns
+    room = new Grid(scene, false, true) ;
+
+    // extra traps and an additional attack card on top of what the constructor spawns
+    room->SpawnTraps(2) ;
+    room->SpawnCards(CardType::Attack, 1) ;
 }
 
 void Level4::initialise()

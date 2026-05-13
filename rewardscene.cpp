@@ -61,5 +61,5 @@ void RewardScene::chooseReward2()
 
 void RewardScene::continueAfterReward()
 {
-    game->openLevel1(); // Temporary placeholder until the next level is implemented
+    game->openNextLevel();
 }
