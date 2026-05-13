@@ -14,6 +14,7 @@ Game::Game(int width,int height)
 {
     current_level = 1 ;
     Character = "" ;
+    level_1 = nullptr ;
     //disable scroll wheel horrizontly and verticly
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -294,6 +295,8 @@ void Game::openLevel3()
 }
 void Game::openLevel4()
 {
+    current_level = 4 ;
+
     if (level_1)
     {
         delete level_1 ;
