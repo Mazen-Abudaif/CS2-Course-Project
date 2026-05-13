@@ -13,7 +13,7 @@
 Game::Game(int width,int height)
 {
     current_level = 1 ;
-    selectedCharacter = "" ;
+    Character = "" ;
     //disable scroll wheel horrizontly and verticly
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -184,12 +184,12 @@ void Game::openCharacterSelect()
 
 void Game::setSelectedCharacter(QString character)
 {
-    selectedCharacter = character ;
+    Character = character ;
 }
 
 QString Game::getSelectedCharacter() const
 {
-    return selectedCharacter ;
+    return Character ;
 }
 
 // opens combat scene — reads triggered enemy stats directly from the room
@@ -312,12 +312,4 @@ void Game::openLevel4()
 void Game::openLevel5()
 {
 
-}
-void Game::setSelectedCharacter(QString Character)
-{
-    this->Character = Character;
-}
-QString Game::getCharacter()
-{
-    return this->Character;
 }

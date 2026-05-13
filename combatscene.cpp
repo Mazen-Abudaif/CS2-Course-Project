@@ -28,12 +28,12 @@ CombatScene::CombatScene(Game* game, int bossMaxHp, int immuneTurns, QObject* pa
     selectedCardLabel(nullptr),
     playerHpBar(nullptr),
     bossHpBar(nullptr),
+    playerSprite(nullptr),
+    enemySprite(nullptr),
     attackButton(nullptr),
     healButton(nullptr),
     blockButton(nullptr),
-    abilityButton(nullptr),
-    playerSprite(nullptr),
-    enemySprite(nullptr)
+    abilityButton(nullptr)
 {
 }
 
@@ -48,13 +48,6 @@ void CombatScene::initialise()
     addItem(backgroundItem);
     backgroundItem->setZValue(-1);
 
-    // player sprite — left side of the scene
-    QPixmap playerPixmap(":/images/Images/skin.png") ;
-    playerPixmap = playerPixmap.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation) ;
-    playerSprite = new QGraphicsPixmapItem(playerPixmap) ;
-    playerSprite->setPos(150, 280) ;
-    playerSprite->setZValue(1) ;
-    addItem(playerSprite) ;
 
     // enemy sprite — right side of the scene
     QPixmap enemyPixmap(":/images/Images/demogorgon (enemy).png") ;
@@ -122,11 +115,11 @@ void CombatScene::initialise()
     connect(blockButton, &QPushButton::clicked, this, &CombatScene::playBlock);
 
     // Player sprite on the left
-    QString characterType = game->getCharacter();
+    QString characterType = game->getSelectedCharacter();
     QString spritePath = (characterType == "mage") ? ":/images/Images/Mage.png" : ":/images/Images/Warrior.png";
     QPixmap playerPixmap(spritePath);
     playerPixmap = playerPixmap.scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    QGraphicsPixmapItem* playerSprite = new QGraphicsPixmapItem(playerPixmap);
+    playerSprite = new QGraphicsPixmapItem(playerPixmap);
     playerSprite->setPos(150, 300);
     playerSprite->setZValue(1);
     addItem(playerSprite);
@@ -173,7 +166,7 @@ void CombatScene::playStrike()
     selectedCardLabel->setText("Selected Card: Attack Card");
 
     // Load the right projectile based on character
-    QString characterType = game->getCharacter();
+    QString characterType = game->getSelectedCharacter();
     QString projectilePath = (characterType == "mage") ? ":/images/Images/mageProjectile.png" : ":/images/Images/warriorProjectile.png";
     QPixmap projectilePixmap(projectilePath);
     if (characterType == "mage")

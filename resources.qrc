@@ -14,6 +14,5 @@
         <file>Images/Warrior.png</file>
         <file>Images/mageProjectile.png</file>
         <file>Images/warriorProjectile.png</file>
-        <file>Images/level4_background.png</file>
     </qresource>
 </RCC>

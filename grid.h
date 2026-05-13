@@ -100,9 +100,7 @@ private:
     int offsetX;
     int offsetY;
 
-    Boss* boss;
-    int detectionRange;
-    QGraphicsEllipseItem* detectionCircle;
+
 };
 
 #endif // GRID_H
