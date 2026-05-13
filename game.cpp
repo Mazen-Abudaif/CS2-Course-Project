@@ -1,4 +1,6 @@
 #include "game.h"
+#include "attackcard.h"
+#include "blockcard.h"
 #include "mainmenu.h"
 #include "level1.h"
 #include <QMessageBox>
@@ -8,6 +10,7 @@
 
 Game::Game(int width,int height)
 {
+    current_level = 1 ;
     //disable scroll wheel horrizontly and verticly
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -59,7 +62,9 @@ void Game::keyPressEvent(QKeyEvent *event)
 
         player->setScenePosition(px, py);
 
-        if (player_pos_grid == room-> trap_places[0] || player_pos_grid == room-> trap_places[1] )
+        for(size_t i=0 ; i <room->trap_places.size() ; i++)
+        {
+            if (player_pos_grid == room-> trap_places.at(i))
         {
             level_1 -> triggerDamageeffect() ;
 
@@ -79,6 +84,29 @@ void Game::keyPressEvent(QKeyEvent *event)
                         this->setScene(gamescene) ;
                     }
             }
+            }
+        }
+        for(size_t i=0 ; i <room->attack_card_places.size() ; i++)
+        {
+            if(player_pos_grid == room-> attack_card_places.at(i).first)
+            {
+                player -> deck.append(new Attackcard(10)) ;
+                room -> RemoveCard(player_pos_grid) ;
+
+            }
+        }
+        for(size_t i=0 ; i <room->block_card_places.size() ; i++)
+        {
+            if(player_pos_grid == room-> block_card_places.at(i).first)
+            {
+                player -> deck.append(new Blockcard(5)) ;
+                room->RemoveCard(player_pos_grid) ;
+
+            }
+        }
+        if(room->isPlayerNearby(newRow,newCol))
+        {
+            openCombat() ;
         }
     }
 }
@@ -150,4 +178,54 @@ void Game::openReward()
     rewardScene->initialise();
     this->setScene(rewardScene);
 }
+void Game::openNextLevel()
+{
+    if (current_level>=5)
+    {
+        QMessageBox::StandardButton reply = QMessageBox::question(this,"Victory!","You have Conquered all Levels!\n\
+ Would you like to restart?",QMessageBox::Yes | QMessageBox::No) ;
+        if(reply==QMessageBox::Yes)
+        {
+            openLevel1() ;
+            current_level = 1;
+        }
+        else
+        {
+            this->close() ;
+        }
+    }
+    if (current_level == 1)
+    {
+        openLevel2() ;
+    }
+    if(current_level == 2)
+    {
+        openLevel3() ;
+    }
+    if(current_level == 3)
+    {
+        openLevel4() ;
+    }
+    if(current_level == 4)
+    {
+        openLevel5() ;
+    }
+    current_level++ ;
+}
 
+void Game::openLevel2()
+{
+
+}
+void Game::openLevel3()
+{
+
+}
+void Game::openLevel4()
+{
+
+}
+void Game::openLevel5()
+{
+
+}

@@ -1,6 +1,6 @@
 #include "consumable.h"
 
-Consumable::Consumable(QString name, int effectValue) : Card(name, "consumable", effectValue)
+Consumable::Consumable(QString name, int effectValue) : Card(name, CardType::Consumable, effectValue)
 {
 
 }
