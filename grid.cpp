@@ -324,7 +324,7 @@ void Grid::createDetectionCircle(QGraphicsScene* scene, Grid* room)
     int centerX = pos.first + tileSize / 2;
     int centerY = pos.second + tileSize / 2;
 
-    detectionCircle = new QGraphicsEllipseItem(
+    QGraphicsEllipseItem* detectionCircle = new QGraphicsEllipseItem(
         centerX - radius,
         centerY - radius,
         radius * 2,

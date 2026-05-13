@@ -34,7 +34,6 @@ protected:
     QPixmap skin ;
 
 protected:
-    QList<Card*> deck;
     QList<Card*> hand;
 
 private:
