@@ -40,22 +40,21 @@ CombatScene::CombatScene(Game* game, int bossMaxHp, int immuneTurns, QObject* pa
 void CombatScene::initialise()
 {
     setSceneRect(0, 0, 1280, 720);
-
-    QPixmap background(":/images/Images/combat_bg_1280x720.png");
+    QString p ;
+    if(game->current_level==5)
+    {
+        p = ":/images/Images/combatscene_l5.png" ;
+    }
+    else
+    {
+        p = ":/images/Images/combat_bg_1280x720.png" ;
+    }
+    QPixmap background(p);
     background = background.scaled(1280, 720, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
 
     QGraphicsPixmapItem* backgroundItem = new QGraphicsPixmapItem(background);
     addItem(backgroundItem);
     backgroundItem->setZValue(-1);
-
-
-    // enemy sprite — right side of the scene
-    QPixmap enemyPixmap(":/images/Images/demogorgon (enemy).png") ;
-    enemyPixmap = enemyPixmap.scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation) ;
-    enemySprite = new QGraphicsPixmapItem(enemyPixmap) ;
-    enemySprite->setPos(950, 260) ;
-    enemySprite->setZValue(1) ;
-    addItem(enemySprite) ;
 
     playerHpLabel = new QLabel("Player HP");
     bossHpLabel = new QLabel("Boss HP");
@@ -63,6 +62,10 @@ void CombatScene::initialise()
     bossActionLabel = new QLabel("Boss Action: None");
     selectedCardLabel = new QLabel("Selected Card: None");
 
+    if (game->getPlayer() != nullptr)
+    {
+        playerHp = game->getPlayer()->getHealth();
+    }
     playerHpBar = new QProgressBar();
     playerHpBar->setRange(0, 100);
     playerHpBar->setValue(playerHp);
@@ -81,12 +84,19 @@ void CombatScene::initialise()
     healButton->setFixedSize(140, 180);
     blockButton->setFixedSize(140, 180);
 
+    attackButton->setVisible(playerHasCard(CardType::Attack));
+    healButton->setVisible(playerHasCard(CardType::Heal));
+    blockButton->setVisible(playerHasCard(CardType::Block));
+
     QString character = game->getSelectedCharacter();
 
-    if (character == "Mage")
+    if(game->current_level==4)
+    {
+    if (character == "mage")
         abilityButton = new QPushButton("Fireball\n(20 dmg, once)");
-    else if (character == "Warrior")
+    else if (character == "warrior")
         abilityButton = new QPushButton("Shield Bash\n(8 dmg + block)");
+    }
 
     addWidget(playerHpLabel)->setPos(50, 40);
     addWidget(playerHpBar)->setPos(50, 70);
@@ -118,17 +128,24 @@ void CombatScene::initialise()
     QString characterType = game->getSelectedCharacter();
     QString spritePath = (characterType == "mage") ? ":/images/Images/Mage.png" : ":/images/Images/Warrior.png";
     QPixmap playerPixmap(spritePath);
-    playerPixmap = playerPixmap.scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    playerPixmap = playerPixmap.scaled(200, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     playerSprite = new QGraphicsPixmapItem(playerPixmap);
     playerSprite->setPos(150, 300);
     playerSprite->setZValue(1);
     addItem(playerSprite);
 
     // Boss sprite on the right
-    QPixmap bossPixmap(":/images/Images/demogorgon (enemy).png");
-    bossPixmap = bossPixmap.scaled(180, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QString pic ;
+    if(game->current_level==5)
+    {
+        pic = ":/images/Images/level_5_enemy.png" ;
+    }
+    else
+    { pic = ":/images/Images/demogorgon (enemy).png" ;}
+    QPixmap bossPixmap(pic);
+    bossPixmap = bossPixmap.scaled(300, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     QGraphicsPixmapItem* bossSprite = new QGraphicsPixmapItem(bossPixmap);
-    bossSprite->setPos(950, 300);
+    bossSprite->setPos(900, 250);
     bossSprite->setZValue(1);
     addItem(bossSprite);
 
@@ -220,6 +237,8 @@ void CombatScene::playHeal()
     selectedCardLabel->setText("Selected Card: Heal Card");
     applyHealCard();
 
+    playerHp += 10;
+    game->getPlayer()->setHealth(playerHp);
 
     playerTurn = false;
 
@@ -310,6 +329,8 @@ void CombatScene::bossAttack()
     }
 
     playerHp -= damage;
+    game->getPlayer()->setHealth(playerHp);
+
     if (playerHp < 0)
         playerHp = 0;
 }
@@ -400,5 +421,44 @@ void CombatScene::applyAbility()
         playerBlocking = true;
         abilityUsed = true;
         abilityButton->setEnabled(false);
+    }
+}
+
+bool CombatScene::playerHasCard(CardType type)
+{
+    for (Card* card : game->getPlayer()->deck)
+    {
+        if (card->getType() == type)
+            return true;
+    }
+    return false;
+}
+
+void CombatScene::updateCardButtons()
+{
+    attackButton->setVisible(playerHasCard(CardType::Attack));
+    healButton->setVisible(playerHasCard(CardType::Heal));
+    blockButton->setVisible(playerHasCard(CardType::Block));
+}
+bool CombatScene::playerHasNoCards()
+{
+    return game->getPlayer()->deck.empty();
+}
+void CombatScene::checkLoseByNoCards()
+{
+    if (!playerHasNoCards()||combatOver)
+        return;
+
+    QMessageBox::StandardButton reply = QMessageBox::question(nullptr,"Game Over",
+                              "You ran out of cards.\nRestart the game?",
+                              QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes)
+    {
+        game->restart();
+    }
+    else
+    {
+        game->openMenu();
     }
 }

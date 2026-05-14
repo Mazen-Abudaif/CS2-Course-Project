@@ -1,6 +1,7 @@
 #ifndef COMBATSCENE_H
 #define COMBATSCENE_H
 
+#include "cardtype.h"
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QLabel>
@@ -30,8 +31,6 @@ private:
     int bossImmuneTurns;
     bool abilityUsed;
 
-
-
     QLabel* playerHpLabel;
     QLabel* bossHpLabel;
     QLabel* turnLabel;
@@ -57,6 +56,11 @@ private:
     void applyHealCard();
     void applyBlockCard();
     void applyAbility();
+
+    bool playerHasCard(CardType type) ;
+    void updateCardButtons();
+    bool playerHasNoCards();
+    void checkLoseByNoCards();
 
 private slots:
     void playStrike();

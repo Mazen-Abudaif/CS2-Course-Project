@@ -7,8 +7,7 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsProxyWidget>
 
-
-Grid::Grid(QGraphicsScene* scene, bool spawnBoss, bool level4Layout)
+Grid::Grid(QGraphicsScene* scene, int current_level ,bool spawnBoss)
     : gamescene(scene),
     boss(nullptr),
     fastEnemy(nullptr),
@@ -19,6 +18,7 @@ Grid::Grid(QGraphicsScene* scene, bool spawnBoss, bool level4Layout)
     triggeredCombatHp(60),
     triggeredImmuneTurns(0),
     triggeredEnemy(nullptr),
+    current_level(current_level),
     level4Layout(level4Layout)
 {
     int gridWidth = cols * tileSize;
@@ -29,7 +29,14 @@ Grid::Grid(QGraphicsScene* scene, bool spawnBoss, bool level4Layout)
 
     initialize_room();
     draw_room() ;
-    gamescene->setSceneRect(0, 0, cols * tileSize, rows * tileSize);
+    gamescene->setSceneRect(0, 0, 1280, 720);
+
+    if (current_level == 5)
+    {   detectionRange = 3;
+        createDarkness() ;}
+
+    else
+        detectionRange = 2;
 
     if (spawnBoss)
         Place_boss() ;
@@ -40,6 +47,10 @@ Grid::Grid(QGraphicsScene* scene, bool spawnBoss, bool level4Layout)
     }
 
     SpawnTraps(1) ;
+    if(current_level==5)
+    {
+        SpawnCards(CardType::Heal , 1) ;
+    }
     SpawnCards(CardType::Attack , 1) ;
     SpawnCards(CardType::Block , 1) ;
 }
@@ -54,8 +65,6 @@ void Grid::SpawnTraps(int traps_no)
 
 void Grid::SpawnCards(CardType type , int number_of_cards)
 {
-    for (int i=0 ; i<number_of_cards ; i++)
-    {
     if(type==CardType::Attack)
     {
         QPixmap Attack_Card(":/images/Images/Attack_Card.png") ;
@@ -69,6 +78,11 @@ void Grid::SpawnCards(CardType type , int number_of_cards)
         Block_Card = Block_Card.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         PlaceCards(number_of_cards,CardType::Block,Block_Card) ;
     }
+    if(type==CardType::Heal)
+    {
+        QPixmap Heal_Card(":/images/Images/heart.png") ;
+        Heal_Card = Heal_Card.scaled(40, 40, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        PlaceCards(number_of_cards,CardType::Heal,Heal_Card) ;
     }
 }
 
@@ -100,6 +114,12 @@ void Grid::setTrap(int traps_no, QGraphicsPixmapItem* trap){
             row = (rand()%rows) ;
             col = (rand()%cols) ;
     } while (!isWalkable(row, col) || isCardPlaceTaken(row, col)) ;
+
+    if(current_level==5)
+    {
+        row = 15;
+        col = 15;
+    }
 
     // saving trap place
     trap_places.push_back({row,col}) ;
@@ -139,9 +159,17 @@ bool Grid::isCardPlaceTaken(int row,int col)
         i++ ;
     }
     i=0;
+    while(i<heal_card_places.size())
+    {
+        if (row==heal_card_places.at(i).first.first && col==heal_card_places.at(i).first.second)
+            return true;
+
+        i++ ;
+    }
+    i=0;
     while(i<trap_places.size())
     {
-        if (row==trap_places.at(i).first && col==trap_places.at(i).first)
+        if (row==trap_places.at(i).first && col==trap_places.at(i).second)
             return true;
 
         i++ ;
@@ -176,19 +204,42 @@ bool Grid::isCardPlaceTaken(int row,int col)
 
 void Grid::Place_boss()
 {
-    boss = new Boss(100);
+    if(current_level == 5)
+        boss = new Boss(150);
+    else
+        boss = new Boss(100);
 
     if(boss==nullptr)
         return ;
 
-    int row = rows/2 ;
-    int col = cols/2 ;
+    int row, col ;
+
+    if(current_level==5)
+    {
+        row = 13;
+        col = 18 ;
+    }
+    else
+    {
+        row = rows/2 ;
+        col = cols/2 ;
+    }
 
     boss->setGridPosition(row, col);
 
     pair<int,int> pos = calcScenePosition(row, col);
 
-    QPixmap BossPixmap(":/images/Images/demogorgon (enemy).png");
+    QString pic ;
+    if(current_level==5)
+    {
+        pic=":/images/Images/level_5_enemy.png";
+    }
+    else
+    {
+        pic=":/images/Images/demogorgon (enemy).png";
+    }
+
+    QPixmap BossPixmap(pic) ;
     BossPixmap = BossPixmap.scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     boss->setPixmap(BossPixmap) ;
 
@@ -199,6 +250,10 @@ void Grid::Place_boss()
 
     gamescene->addItem(boss);
     boss->setZValue(2);
+    if(current_level==5)
+    {
+        return ;
+    }
     createDetectionCircle(gamescene,this) ;
 }
 
@@ -270,6 +325,7 @@ void Grid::PlaceTankyEnemy()
 
 void Grid::PlaceCards(int times,CardType type, const QPixmap& card)
 {
+    vector<pair<int,int>> fixedPositions;
     for(int i=0 ; i<times ; i++)
     {
     int row, col;
@@ -278,35 +334,44 @@ void Grid::PlaceCards(int times,CardType type, const QPixmap& card)
         col = (rand()%cols) ;
     } while (!isWalkable(row, col) || isCardPlaceTaken(row, col)) ;
 
-        pair<int,int> pos ;
-        pos = calcScenePosition(row,col) ;
-
-        QGraphicsPixmapItem *newCard = new QGraphicsPixmapItem(card);
-        int x,y;
-        x = pos.first + (tileSize - newCard->pixmap().width()) / 2;
-        y = pos.second + (tileSize - newCard->pixmap().height()) / 2;
-
-        newCard->setPos(x,y) ;
-
-        gamescene->addItem(newCard) ;
-        newCard->setZValue(1) ;
-
-        if(type== CardType::Attack)
+    if(current_level==5)
+    {
+        if(type==CardType::Attack)
         {
-            attack_card_places.push_back(pair(pair(row,col),newCard)) ;
+            fixedPositions = {
+                {5,1},
+                {15,14}
+            };
         }
-        else if(type == CardType::Block)
+        else if (type == CardType::Block)
         {
-            block_card_places.push_back(pair(pair(row,col),newCard)) ;
+            fixedPositions = {
+                {1,11},
+                {7,18}
+            };
         }
-        else if(type==CardType::Heal)
+        else if (type == CardType::Heal)
         {
-            heal_card_places.push_back(pair(pair(row,col),newCard)) ;
+            fixedPositions = {
+                {1,17}
+            };
         }
-        else
+        int count = min(times, (int)fixedPositions.size());
+        for (int i = 0; i < count; i++)
         {
-            return ;
+            PlaceCardAt(type, fixedPositions[i].first, fixedPositions[i].second, card);
         }
+        return ;
+    }
+    for(int i=0 ; i<times ; i++)
+    {
+        int row, col;
+        do{
+            row = (rand()%rows) ;
+            col = (rand()%cols) ;
+        } while (row==0||col==0||row==rows-1||col==cols-1 || isCardPlaceTaken(row,col)==true) ;
+
+        PlaceCardAt(type,row,col,card) ;
     }
 }
 
@@ -314,6 +379,12 @@ void Grid::initialize_room()
 {
     // resize the room grid to a certain number of rows, and create empty columns for each row
     roomGrid.resize(rows,vector<int>(cols,0)) ;
+
+    if (current_level == 5)
+    {
+        createLevel5layout();
+        return;
+    }
 
     //loop over the rows
     for(int row=0 ; row<rows ; row++)
@@ -555,6 +626,33 @@ bool Grid::allEnemiesDefeated() const
     return fastEnemy == nullptr && tankyEnemy == nullptr ;
 }
 
+void Grid::PlaceCardAt(CardType type, int row, int col, const QPixmap& card)
+{
+    if (!isWalkable(row, col))
+        return;
+
+    if (isCardPlaceTaken(row, col))
+        return;
+
+    pair<int,int> pos = calcScenePosition(row, col);
+
+    QGraphicsPixmapItem* newCard = new QGraphicsPixmapItem(card);
+
+    int x = pos.first + (tileSize - newCard->pixmap().width()) / 2;
+    int y = pos.second + (tileSize - newCard->pixmap().height()) / 2;
+
+    newCard->setPos(x, y);
+    newCard->setZValue(1);
+    gamescene->addItem(newCard);
+
+    if (type == CardType::Attack)
+        attack_card_places.push_back({{row, col}, newCard});
+    else if (type == CardType::Block)
+        block_card_places.push_back({{row, col}, newCard});
+    else if (type == CardType::Heal)
+        heal_card_places.push_back({{row, col}, newCard});
+}
+
 void Grid::RemoveCard(pair<int, int> place)
 {
     for(size_t i=0 ; i<attack_card_places.size(); i++)
@@ -585,6 +683,98 @@ void Grid::RemoveCard(pair<int, int> place)
             delete heal_card_places.at(i).second ;
             heal_card_places.erase(heal_card_places.begin()+i) ;
             return ;
+        }
+    }
+}
+
+void Grid::createLevel5layout()
+{
+    vector<string> layout =
+        {
+            "####################",
+            "#........#.........#",
+            "#.######.#.#######.#",
+            "#.#....#.#.....#...#",
+            "#.#.##.#.#####.#.###",
+            "#...##.#.....#.#...#",
+            "######.#####.#.###.#",
+            "#......#.....#.....#",
+            "#.######.#########.#",
+            "#.#......#.........#",
+            "#.#.######.#######.#",
+            "#.#......#.....#...#",
+            "#.######.#####.#.###",
+            "#......#.......#..B#",
+            "######.#############",
+            "#S.................#",
+            "####################"
+        };
+    for(int row = 0; row < rows; row++)
+    {
+        for(int col = 0; col < cols; col++)
+        {
+            char tile = layout[row][col];
+            if(tile == '#')
+                roomGrid[row][col] = 1; // wall
+            else
+                roomGrid[row][col] = 0; // floor
+        }
+    }
+}
+void Grid::createDarkness()
+{
+    darknessTiles.resize(rows, vector<QGraphicsRectItem*>(cols, nullptr));
+
+    for(int row = 0; row < rows; row++)
+    {
+        for(int col = 0; col < cols; col++)
+        {
+            pair<int,int> pos = calcScenePosition(row, col);
+
+            QGraphicsRectItem* darkTile = new QGraphicsRectItem(
+                pos.first,
+                pos.second,
+                tileSize,
+                tileSize
+                );
+
+            darkTile->setBrush(QColor(0, 0, 0, 250));
+            darkTile->setPen(Qt::NoPen);
+
+            // above cards/traps/boss,but below player
+            darkTile->setZValue(8);
+
+            gamescene->addItem(darkTile);
+            darknessTiles[row][col] = darkTile;
+        }
+    }
+}
+void Grid::updateDarkness(int playerRow, int playerCol)
+{
+    for(int row = 0; row < rows; row++)
+    {
+        for(int col = 0; col < cols; col++)
+        {
+            int rowDiff = abs(row - playerRow);
+            int colDiff = abs(col - playerCol);
+
+            QGraphicsRectItem* darkTile = darknessTiles[row][col];
+
+            if(rowDiff == 0 && colDiff == 0)
+            {
+                // player tile: fully visible
+                darkTile->setBrush(QColor(0, 0, 0, 0));
+            }
+            else if(rowDiff <= 1 && colDiff <= 1)
+            {
+                // one tile around player: looks like light/fog
+                darkTile->setBrush(QColor(0, 0, 0, 80));
+            }
+            else
+            {
+                // far tiles: very dark
+               darkTile->setBrush(QColor(0, 0, 0, 250));
+            }
         }
     }
 }
