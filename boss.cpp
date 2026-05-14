@@ -4,9 +4,9 @@
 #include "consumable.h"
 #include <cstdlib>
 
-Boss::Boss(int health, BossType type) : Character(health), type(type)
+Boss::Boss(int health, BossType type, int damage) : Character(health), type(type)
 {
-    deck.append(new Attackcard(50));
+    deck.append(new Attackcard(damage));
     deck.append(new Blockcard(100));
     deck.append(new Consumable("Heal",30));
 }

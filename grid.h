@@ -5,6 +5,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsEllipseItem>
+#include <QGraphicsRectItem>
 #include <QWidget>
 #include <vector>
 #include <QPoint>
@@ -14,7 +15,7 @@ using namespace std;
 class Grid
 {
 public:
-    Grid(QGraphicsScene* scene, bool spawnBoss = true) ; // the parametrized constructor
+    Grid(QGraphicsScene* scene, bool spawnBoss = true, bool dense = false, bool level3Mode = false) ; // the parametrized constructor
 
     // functions to spawn the items
     void SpawnTraps(int traps_no) ;
@@ -40,11 +41,27 @@ public:
     pair<int,int> calcScenePosition(int row, int col);
 
     // function to place the boss randomly
-    void Place_boss() ;
+    void Place_boss();
 
     // functions to place level 4 enemy types
-    void PlaceFastEnemy() ;
-    void PlaceTankyEnemy() ;
+    void PlaceFastEnemy();
+    void PlaceTankyEnemy();
+
+
+    void PlaceLevel2Enemy1();
+    void PlaceLevel2Enemy2();
+
+    // Level 3 enemy placement and key-door mechanic
+    void PlaceLevel3Guard1();
+    void PlaceLevel3Guard2();
+    void PlaceLevel3LockedBoss();
+    bool isKeyAt(int row, int col) const;
+    void pickUpKey();
+    bool getPlayerHasKey() const;
+
+    pair<int,int> key_place;
+    bool keyDropped;
+    bool playerHasKey;
 
     //function to create detection circle
     void createDetectionCircle(QGraphicsScene* scene, Grid* room);
@@ -86,6 +103,7 @@ private:
     QGraphicsEllipseItem* detectionCircle ;
     QGraphicsEllipseItem* fastEnemyCircle ;
     QGraphicsEllipseItem* tankyEnemyCircle ;
+    QGraphicsEllipseItem* level3BossCircle ;
 
     int triggeredCombatHp ;
     int triggeredImmuneTurns ;
@@ -99,6 +117,13 @@ private:
 
     int offsetX;
     int offsetY;
+    bool dense;
+    bool level3Mode;
+    int doorRow;
+    int doorCol;
+    QGraphicsRectItem* doorItem;
+    QGraphicsEllipseItem* keyItem;
+    void spawnKey(int row, int col);
 
 
 };

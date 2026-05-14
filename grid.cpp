@@ -8,17 +8,26 @@
 #include <QGraphicsProxyWidget>
 
 
-Grid::Grid(QGraphicsScene* scene, bool spawnBoss)
+Grid::Grid(QGraphicsScene* scene, bool spawnBoss, bool dense, bool level3Mode)
     : gamescene(scene),
+    dense(dense),
+    level3Mode(level3Mode),
     boss(nullptr),
     fastEnemy(nullptr),
     tankyEnemy(nullptr),
     detectionCircle(nullptr),
     fastEnemyCircle(nullptr),
     tankyEnemyCircle(nullptr),
+    level3BossCircle(nullptr),
     triggeredCombatHp(60),
     triggeredImmuneTurns(0),
-    triggeredEnemy(nullptr)
+    triggeredEnemy(nullptr),
+    doorRow(7),
+    doorCol(13),
+    doorItem(nullptr),
+    keyItem(nullptr),
+    keyDropped(false),
+    playerHasKey(false)
 {
     int gridWidth = cols * tileSize;
     int gridHeight = rows * tileSize;
@@ -30,12 +39,15 @@ Grid::Grid(QGraphicsScene* scene, bool spawnBoss)
     draw_room() ;
     gamescene->setSceneRect(0, 0, cols * tileSize, rows * tileSize);
 
-    if (spawnBoss)
-        Place_boss() ;
-    else
+    if (!level3Mode)
     {
-        PlaceFastEnemy() ;
-        PlaceTankyEnemy() ;
+        if (spawnBoss)
+            Place_boss() ;
+        else
+        {
+            PlaceFastEnemy() ;
+            PlaceTankyEnemy() ;
+        }
     }
 
     SpawnTraps(1) ;
@@ -77,8 +89,14 @@ bool Grid:: isWalkable(int row, int col)
     if(row<0||col<0||row>=rows||col>=cols)
             return false ;
 
-    //returns if its a wall or floor tile
-    return roomGrid[row][col]==0 ;
+    if(roomGrid[row][col]==1)
+        return false ;
+
+    // door tile is blocked until player has the key
+    if(level3Mode && !playerHasKey && row == doorRow && col == doorCol)
+        return false ;
+
+    return true ;
 
 }
 
@@ -335,6 +353,32 @@ void Grid::initialize_room()
             }
         }
     }
+    if(dense)
+    {
+        // horizontal wall, row 4, cols 2–7 (gap at col 8 so player can pass)
+        for (int col = 2; col <= 7; col++)
+            roomGrid[4][col] = 1;
+
+        // horizontal wall, row 10, cols 12–17 (gap at col 11)
+        for (int col = 12; col <= 17; col++)
+            roomGrid[10][col] = 1;
+
+        // vertical wall, col 10, rows 5–9 (gap at row 4 and row 10)
+        for (int row = 5; row <= 9; row++)
+            roomGrid[row][10] = 1;
+    }
+
+    if(level3Mode)
+    {
+        // Vertical dividing wall creating the boss room on the right side.
+        // Row 7 (doorRow) is left open as a floor tile; the door mechanic
+        // blocks it in isWalkable() until the player has the key.
+        for (int r = 1; r <= rows-2; r++)
+        {
+            if (r != doorRow)
+                roomGrid[r][doorCol] = 1;
+        }
+    }
 }
 
 void Grid::draw_room()
@@ -437,6 +481,66 @@ void Grid::createDetectionCircle(QGraphicsScene* scene, Grid* room)
     scene->addItem(detectionCircle);
 }
 
+void Grid::PlaceLevel2Enemy1()
+{
+    fastEnemy = new Boss(80, BossType::Regular, 65) ;
+
+    int row = rows / 4 ;
+    int col = cols / 4 ;
+
+    fastEnemy->setGridPosition(row, col) ;
+    pair<int,int> pos = calcScenePosition(row, col) ;
+
+    QPixmap pix(":/images/Images/demogorgon (enemy).png") ;
+    pix = pix.scaled(45, 45, Qt::KeepAspectRatio, Qt::SmoothTransformation) ;
+    fastEnemy->setPixmap(pix) ;
+
+    int tx = pos.first + (tileSize - fastEnemy->pixmap().width()) / 2 ;
+    int ty = pos.second + (tileSize - fastEnemy->pixmap().height()) / 2 ;
+    fastEnemy->setPos(tx, ty) ;
+    gamescene->addItem(fastEnemy) ;
+    fastEnemy->setZValue(2) ;
+
+    int radius = detectionRange * tileSize ;
+    int centerX = pos.first + tileSize / 2 ;
+    int centerY = pos.second + tileSize / 2 ;
+    fastEnemyCircle = new QGraphicsEllipseItem(centerX - radius, centerY - radius, radius * 2, radius * 2) ;
+    fastEnemyCircle->setBrush(QColor(200, 0, 200, 40)) ;
+    fastEnemyCircle->setPen(Qt::NoPen) ;
+    fastEnemyCircle->setZValue(1) ;
+    gamescene->addItem(fastEnemyCircle) ;
+}
+
+void Grid::PlaceLevel2Enemy2()
+{
+    tankyEnemy = new Boss(80, BossType::Regular, 65) ;
+
+    int row = 3 * rows / 4 ;
+    int col = 3 * cols / 4 ;
+
+    tankyEnemy->setGridPosition(row, col) ;
+    pair<int,int> pos = calcScenePosition(row, col) ;
+
+    QPixmap pix(":/images/Images/demogorgon (enemy).png") ;
+    pix = pix.scaled(45, 45, Qt::KeepAspectRatio, Qt::SmoothTransformation) ;
+    tankyEnemy->setPixmap(pix) ;
+
+    int tx = pos.first + (tileSize - tankyEnemy->pixmap().width()) / 2 ;
+    int ty = pos.second + (tileSize - tankyEnemy->pixmap().height()) / 2 ;
+    tankyEnemy->setPos(tx, ty) ;
+    gamescene->addItem(tankyEnemy) ;
+    tankyEnemy->setZValue(2) ;
+
+    int radius = detectionRange * tileSize ;
+    int centerX = pos.first + tileSize / 2 ;
+    int centerY = pos.second + tileSize / 2 ;
+    tankyEnemyCircle = new QGraphicsEllipseItem(centerX - radius, centerY - radius, radius * 2, radius * 2) ;
+    tankyEnemyCircle->setBrush(QColor(200, 0, 200, 40)) ;
+    tankyEnemyCircle->setPen(Qt::NoPen) ;
+    tankyEnemyCircle->setZValue(1) ;
+    gamescene->addItem(tankyEnemyCircle) ;
+}
+
 bool Grid::isPlayerNearby(int playerRow, int playerCol)
 {
     if (boss != nullptr)
@@ -444,8 +548,12 @@ bool Grid::isPlayerNearby(int playerRow, int playerCol)
         int dist = abs(playerRow - boss->getRow()) + abs(playerCol - boss->getCol()) ;
         if (dist <= detectionRange)
         {
+            // In level 3 the boss room is locked until the player holds the key
+            if (level3Mode && !playerHasKey)
+                return false ;
+
             triggeredEnemy = boss ;
-            triggeredCombatHp = 60 ;
+            triggeredCombatHp = level3Mode ? boss->getHealth() : 60 ;
             triggeredImmuneTurns = 0 ;
             return true ;
         }
@@ -457,7 +565,7 @@ bool Grid::isPlayerNearby(int playerRow, int playerCol)
         if (dist <= detectionRange)
         {
             triggeredEnemy = fastEnemy ;
-            triggeredCombatHp = 40 ;
+            triggeredCombatHp = fastEnemy->getHealth();
             triggeredImmuneTurns = 0 ;
             return true ;
         }
@@ -469,7 +577,7 @@ bool Grid::isPlayerNearby(int playerRow, int playerCol)
         if (dist <= detectionRange)
         {
             triggeredEnemy = tankyEnemy ;
-            triggeredCombatHp = 120 ;
+            triggeredCombatHp = tankyEnemy->getHealth();
             triggeredImmuneTurns = 2 ;
             return true ;
         }
@@ -495,6 +603,10 @@ void Grid::removeTriggeredEnemy()
 
     if (triggeredEnemy == fastEnemy)
     {
+        // In level 3, Guard 1 drops the key when defeated
+        if (level3Mode)
+            spawnKey(fastEnemy->getRow(), fastEnemy->getCol()) ;
+
         gamescene->removeItem(fastEnemy) ;
         delete fastEnemy ;
         fastEnemy = nullptr ;
@@ -519,14 +631,184 @@ void Grid::removeTriggeredEnemy()
             tankyEnemyCircle = nullptr ;
         }
     }
+    else if (level3Mode && triggeredEnemy == boss)
+    {
+        gamescene->removeItem(boss) ;
+        delete boss ;
+        boss = nullptr ;
+
+        if (level3BossCircle != nullptr)
+        {
+            gamescene->removeItem(level3BossCircle) ;
+            delete level3BossCircle ;
+            level3BossCircle = nullptr ;
+        }
+    }
 
     triggeredEnemy = nullptr ;
 }
 
 bool Grid::allEnemiesDefeated() const
 {
+    if (level3Mode)
+        return fastEnemy == nullptr && tankyEnemy == nullptr && boss == nullptr ;
     return fastEnemy == nullptr && tankyEnemy == nullptr ;
 }
+
+// ── Level 3 ──────────────────────────────────────────────────────────────────
+
+void Grid::PlaceLevel3Guard1()
+{
+    // Guard 1: regular enemy that drops the key when defeated
+    fastEnemy = new Boss(70, BossType::Regular, 55) ;
+
+    int row = rows / 4 ;        // row 3
+    int col = cols / 4 ;        // col 5
+
+    fastEnemy->setGridPosition(row, col) ;
+    pair<int,int> pos = calcScenePosition(row, col) ;
+
+    QPixmap pix(":/images/Images/demogorgon (enemy).png") ;
+    pix = pix.scaled(45, 45, Qt::KeepAspectRatio, Qt::SmoothTransformation) ;
+    fastEnemy->setPixmap(pix) ;
+
+    int tx = pos.first  + (tileSize - fastEnemy->pixmap().width())  / 2 ;
+    int ty = pos.second + (tileSize - fastEnemy->pixmap().height()) / 2 ;
+    fastEnemy->setPos(tx, ty) ;
+    gamescene->addItem(fastEnemy) ;
+    fastEnemy->setZValue(2) ;
+
+    int radius  = detectionRange * tileSize ;
+    int centerX = pos.first  + tileSize / 2 ;
+    int centerY = pos.second + tileSize / 2 ;
+
+    fastEnemyCircle = new QGraphicsEllipseItem(centerX - radius, centerY - radius, radius * 2, radius * 2) ;
+    fastEnemyCircle->setBrush(QColor(0, 200, 100, 40)) ;   // green tint – key dropper
+    fastEnemyCircle->setPen(Qt::NoPen) ;
+    fastEnemyCircle->setZValue(1) ;
+    gamescene->addItem(fastEnemyCircle) ;
+}
+
+void Grid::PlaceLevel3Guard2()
+{
+    // Guard 2: standard guard, no key drop
+    tankyEnemy = new Boss(70, BossType::Regular, 55) ;
+
+    int row = 3 * rows / 4 ;   // row 11
+    int col = cols / 4 ;        // col 5
+
+    tankyEnemy->setGridPosition(row, col) ;
+    pair<int,int> pos = calcScenePosition(row, col) ;
+
+    QPixmap pix(":/images/Images/demogorgon (enemy).png") ;
+    pix = pix.scaled(45, 45, Qt::KeepAspectRatio, Qt::SmoothTransformation) ;
+    tankyEnemy->setPixmap(pix) ;
+
+    int tx = pos.first  + (tileSize - tankyEnemy->pixmap().width())  / 2 ;
+    int ty = pos.second + (tileSize - tankyEnemy->pixmap().height()) / 2 ;
+    tankyEnemy->setPos(tx, ty) ;
+    gamescene->addItem(tankyEnemy) ;
+    tankyEnemy->setZValue(2) ;
+
+    int radius  = detectionRange * tileSize ;
+    int centerX = pos.first  + tileSize / 2 ;
+    int centerY = pos.second + tileSize / 2 ;
+
+    tankyEnemyCircle = new QGraphicsEllipseItem(centerX - radius, centerY - radius, radius * 2, radius * 2) ;
+    tankyEnemyCircle->setBrush(QColor(200, 100, 0, 40)) ;   // amber tint
+    tankyEnemyCircle->setPen(Qt::NoPen) ;
+    tankyEnemyCircle->setZValue(1) ;
+    gamescene->addItem(tankyEnemyCircle) ;
+}
+
+void Grid::PlaceLevel3LockedBoss()
+{
+    // Boss: 100 HP, sits inside the locked room
+    boss = new Boss(100, BossType::Regular, 70) ;
+
+    int row = rows / 2 ;        // row 7  (centre of boss room)
+    int col = (doorCol + cols - 1) / 2 ;   // col ≈ 16
+
+    boss->setGridPosition(row, col) ;
+    pair<int,int> pos = calcScenePosition(row, col) ;
+
+    QPixmap pix(":/images/Images/demogorgon (enemy).png") ;
+    pix = pix.scaled(55, 55, Qt::KeepAspectRatio, Qt::SmoothTransformation) ;
+    boss->setPixmap(pix) ;
+
+    int tx = pos.first  + (tileSize - boss->pixmap().width())  / 2 ;
+    int ty = pos.second + (tileSize - boss->pixmap().height()) / 2 ;
+    boss->setPos(tx, ty) ;
+    gamescene->addItem(boss) ;
+    boss->setZValue(2) ;
+
+    int radius  = detectionRange * tileSize ;
+    int centerX = pos.first  + tileSize / 2 ;
+    int centerY = pos.second + tileSize / 2 ;
+
+    level3BossCircle = new QGraphicsEllipseItem(centerX - radius, centerY - radius, radius * 2, radius * 2) ;
+    level3BossCircle->setBrush(QColor(255, 0, 0, 40)) ;   // red tint
+    level3BossCircle->setPen(Qt::NoPen) ;
+    level3BossCircle->setZValue(1) ;
+    gamescene->addItem(level3BossCircle) ;
+
+    // Locked door visual: golden rectangle over the door floor tile
+    pair<int,int> doorPos = calcScenePosition(doorRow, doorCol) ;
+    doorItem = new QGraphicsRectItem(doorPos.first, doorPos.second, tileSize, tileSize) ;
+    doorItem->setBrush(QColor(218, 165, 32)) ;             // gold
+    doorItem->setPen(QPen(QColor(139, 100, 0), 2)) ;
+    doorItem->setZValue(3) ;
+    gamescene->addItem(doorItem) ;
+}
+
+void Grid::spawnKey(int row, int col)
+{
+    key_place  = {row, col} ;
+    keyDropped = true ;
+
+    pair<int,int> pos = calcScenePosition(row, col) ;
+    int cx = pos.first  + tileSize / 2 ;
+    int cy = pos.second + tileSize / 2 ;
+    int r  = 8 ;
+
+    keyItem = new QGraphicsEllipseItem(cx - r, cy - r, r * 2, r * 2) ;
+    keyItem->setBrush(QColor(255, 215, 0)) ;   // bright gold
+    keyItem->setPen(QPen(QColor(180, 140, 0), 2)) ;
+    keyItem->setZValue(3) ;
+    gamescene->addItem(keyItem) ;
+}
+
+bool Grid::isKeyAt(int row, int col) const
+{
+    return keyDropped && !playerHasKey && key_place.first == row && key_place.second == col ;
+}
+
+void Grid::pickUpKey()
+{
+    playerHasKey = true ;
+
+    if (keyItem != nullptr)
+    {
+        gamescene->removeItem(keyItem) ;
+        delete keyItem ;
+        keyItem = nullptr ;
+    }
+
+    // Remove the locked door visual; isWalkable() will now allow passage
+    if (doorItem != nullptr)
+    {
+        gamescene->removeItem(doorItem) ;
+        delete doorItem ;
+        doorItem = nullptr ;
+    }
+}
+
+bool Grid::getPlayerHasKey() const
+{
+    return playerHasKey ;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 void Grid::RemoveCard(pair<int, int> place)
 {

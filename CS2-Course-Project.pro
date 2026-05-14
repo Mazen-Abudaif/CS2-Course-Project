@@ -21,6 +21,8 @@ SOURCES += \
     game.cpp \
     grid.cpp \
     level1.cpp \
+    level2.cpp \
+    level3.cpp \
     level4.cpp \
     main.cpp \
     mainmenu.cpp \
@@ -41,6 +43,8 @@ HEADERS += \
     game.h \
     grid.h \
     level1.h \
+    level2.h \
+    level3.h \
     level4.h \
     mainmenu.h \
     player.h \

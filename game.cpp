@@ -3,6 +3,8 @@
 #include "blockcard.h"
 #include "mainmenu.h"
 #include "level1.h"
+#include "level2.h"
+#include "level3.h"
 #include "level4.h"
 #include <QMessageBox>
 #include "characterselect.h"
@@ -122,6 +124,13 @@ void Game::keyPressEvent(QKeyEvent *event)
 
             }
         }
+        // Level 3 key pickup: Guard 1 drops a key that unlocks the boss room
+        if (room->isKeyAt(newRow, newCol))
+        {
+            room->pickUpKey() ;
+            QMessageBox::information(this, "Key Obtained!", "You picked up the key!\nThe boss room door is now unlocked.") ;
+        }
+
         if(room->isPlayerNearby(newRow,newCol))
         {
             openCombat() ;
@@ -230,6 +239,8 @@ void Game::onCombatLose()
 {
     if (dynamic_cast<Level4*>(level_1) != nullptr)
         openLevel4() ;
+    else if (dynamic_cast<Level3*>(level_1) != nullptr)
+        openLevel3() ;
     else
         openLevel1() ;
 }
@@ -286,11 +297,37 @@ void Game::openNextLevel()
 
 void Game::openLevel2()
 {
+    if (level_1)
+    {
+        delete level_1 ;
+        level_1 = nullptr ;
+    }
 
+    gamescene = new QGraphicsScene() ;
+    gamescene->setSceneRect(0, 0, 1280, 720) ;
+
+    level_1 = new Level2(gamescene, this) ;
+    level_1->initialise() ;
+
+    this->setScene(gamescene) ;
+    this->setFocus() ;
 }
 void Game::openLevel3()
 {
+    if (level_1)
+    {
+        delete level_1 ;
+        level_1 = nullptr ;
+    }
 
+    gamescene = new QGraphicsScene() ;
+    gamescene->setSceneRect(0, 0, 1280, 720) ;
+
+    level_1 = new Level3(gamescene, this) ;
+    level_1->initialise() ;
+
+    this->setScene(gamescene) ;
+    this->setFocus() ;
 }
 void Game::openLevel4()
 {
