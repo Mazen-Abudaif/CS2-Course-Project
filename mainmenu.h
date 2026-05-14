@@ -18,7 +18,8 @@ public:
 private:
     Game* game;
 public slots:
-    void new_game(); // for the button "New Game"
+    void new_game();
+    void continue_game();
 };
 
 #endif // MAINMENU_H

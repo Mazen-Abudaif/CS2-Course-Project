@@ -8,6 +8,7 @@ class Card
 public:
     Card(QString name, CardType type, int effectValue);
     virtual void use() = 0;
+    virtual int getDamage() const = 0;
     CardType getType() const;
 protected:
     QString name;

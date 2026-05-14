@@ -9,3 +9,8 @@ void Attackcard::use()
 {
 
 }
+
+int Attackcard::getDamage() const
+{
+    return effectValue;
+}

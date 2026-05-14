@@ -7,6 +7,7 @@ class Attackcard : public Card
 public:
     Attackcard(int effectValue);
     void use() override;
+    int getDamage() const override;
 };
 
 #endif // ATTACKCARD_H

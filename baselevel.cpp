@@ -3,6 +3,10 @@
 #include <QLabel>
 #include <QProgressBar>
 #include <QGraphicsProxyWidget>
+#include "healcard.h"
+#include "attackcard.h"
+#include "blockcard.h"
+#include <QSettings>
 
 Baselevel::Baselevel(QGraphicsScene* scene, Game* game) : QObject() , room(nullptr), scene(scene), game(game), player(nullptr)
 {
@@ -22,7 +26,6 @@ void Baselevel::initialise(){
     // creating player
     player = new Player(game->getSelectedCharacter());
     scene->addItem(player);
-    player -> setHealth(100) ; // setting health of the player
 
     player->setGridPosition(playerStartRow, playerStartCol);
     player->setZValue(20) ;
@@ -52,6 +55,39 @@ void Baselevel::initialise(){
     damageOverlay->setVisible(false);
 
     scene->addItem(damageOverlay);
+    // after player is created and positioned...
+
+    QString reward = game->getRewardCard();
+    if (reward == "Greater Heal")
+        player->deck.append(new HealCard(20));
+    else if (reward == "Dagger")
+        player->deck.append(new Attackcard(5));
+
+    QSettings settings("MyGame", "SaveData");
+    if (settings.contains("hp"))
+    {
+        player->setHealth(settings.value("hp").toInt());
+        updateHpBar();
+
+        QStringList cardList = settings.value("deck").toStringList();
+        for (const QString& entry : cardList)
+        {
+            QStringList parts = entry.split(":");
+            if (parts.size() != 2) continue;
+            QString type = parts[0];
+            int value = parts[1].toInt();
+
+            if (type == "Attack")
+                player->deck.append(new Attackcard(value));
+            else if (type == "Block")
+                player->deck.append(new Blockcard(value));
+            else if (type == "Heal")
+                player->deck.append(new HealCard(value));
+        }
+
+        settings.remove("hp");
+        settings.remove("deck");
+    }
 
 }
 void Baselevel::setBackground(QGraphicsPixmapItem* background){

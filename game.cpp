@@ -13,6 +13,7 @@
 #include "combatscene.h"
 #include "rewardscene.h"
 #include <QPropertyAnimation>
+#include <QSettings>
 
 Game::Game(int width,int height)
 {
@@ -372,15 +373,15 @@ void Game::openNextLevel()
     {
         openLevel2() ;
     }
-    if(current_level == 2)
+    else if(current_level == 2)
     {
         openLevel3() ;
     }
-    if(current_level == 3)
+    else if(current_level == 3)
     {
         openLevel4() ;
     }
-    if(current_level == 4)
+    else if(current_level == 4)
     {
         openLevel5() ;
     }
@@ -459,4 +460,24 @@ void Game::openLevel5()
 Player* Game::getPlayer()
 {
     return p ;
+}
+
+bool Game::hasSave()
+{
+    QSettings settings("MyGame", "SaveData");
+    return settings.contains("level");
+}
+
+void Game::loadSave()
+{
+    QSettings settings("MyGame", "SaveData");
+    current_level = settings.value("level").toInt();
+    setSelectedCharacter(settings.value("character").toString());
+    setRewardCard(settings.value("rewardCard").toString());
+
+    if (current_level == 1) openLevel1();
+    else if (current_level == 2) openLevel2();
+    else if (current_level == 3) openLevel3();
+    else if (current_level == 4) openLevel4();
+    else if (current_level == 5) openLevel5();
 }

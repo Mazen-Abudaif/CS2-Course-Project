@@ -1,8 +1,11 @@
 #include "rewardscene.h"
 #include "game.h"
+#include "player.h"
+#include "cardtype.h"
 
 #include <QGraphicsProxyWidget>
 #include <QGraphicsPixmapItem>
+#include <QSettings>
 
 RewardScene::RewardScene(Game* game, QObject* parent)
     : QGraphicsScene(parent),
@@ -73,5 +76,31 @@ void RewardScene::chooseReward2()
 void RewardScene::continueAfterReward()
 {
     game->setRewardCard(selectedReward);
-    game->openNextLevel();
+
+
+
+    Player* player = game->getPlayer();
+    if (player)
+    {
+        game->openNextLevel();
+        QSettings settings("MyGame", "SaveData");
+        settings.setValue("level", game->current_level+1);
+        settings.setValue("character", game->getSelectedCharacter());
+        settings.setValue("rewardCard", selectedReward);
+        settings.setValue("hp", player->getHealth());
+
+        QStringList cardList;
+        for (Card* card : player->deck)
+        {
+            if (card->getType() == CardType::Attack)
+                cardList.append("Attack:" + QString::number(card->getDamage()));
+            else if (card->getType() == CardType::Block)
+                cardList.append("Block:" + QString::number(card->getDamage()));
+            else if (card->getType() == CardType::Heal)
+                cardList.append("Heal:" + QString::number(card->getDamage()));
+        }
+        settings.setValue("deck", cardList);
+    }
+
+
 }

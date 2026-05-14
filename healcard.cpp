@@ -10,5 +10,10 @@ void HealCard::use()
 
 }
 
+int HealCard::getDamage() const
+{
+    return effectValue;
+}
+
 
 

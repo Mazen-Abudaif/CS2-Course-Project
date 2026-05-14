@@ -8,8 +8,9 @@
 #include <QGraphicsProxyWidget>
 
 Grid::Grid(QGraphicsScene* scene, int current_level, bool spawnBoss)
-    : gamescene(scene),
-    current_level(current_level),
+    : keyDropped(false),
+    playerHasKey(false),
+    gamescene(scene),
     boss(nullptr),
     fastEnemy(nullptr),
     tankyEnemy(nullptr),
@@ -20,12 +21,11 @@ Grid::Grid(QGraphicsScene* scene, int current_level, bool spawnBoss)
     triggeredCombatHp(60),
     triggeredImmuneTurns(0),
     triggeredEnemy(nullptr),
+    current_level(current_level),
     doorRow(7),
     doorCol(13),
     doorItem(nullptr),
-    keyItem(nullptr),
-    keyDropped(false),
-    playerHasKey(false)
+    keyItem(nullptr)
 {
     int gridWidth = cols * tileSize;
     int gridHeight = rows * tileSize;
@@ -62,8 +62,14 @@ Grid::Grid(QGraphicsScene* scene, int current_level, bool spawnBoss)
     }
     SpawnCards(CardType::Attack , 1) ;
     SpawnCards(CardType::Block , 1) ;
-}
 
+if(current_level == 3)
+{
+    SpawnCards(CardType::Heal, 1);
+}
+SpawnCards(CardType::Attack, 1);
+SpawnCards(CardType::Block, 1);
+}
 void Grid::SpawnTraps(int traps_no)
 {
     QPixmap trapPixmap(":/images/Images/trap.png");

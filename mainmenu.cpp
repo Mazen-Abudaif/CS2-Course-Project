@@ -24,11 +24,25 @@ Mainmenu::Mainmenu(Game* game): QGraphicsScene()
 
 
     addWidget(newGame_Button);
-    //connect(newGame_Button, SIGNAL(clicked()), this, SLOT(new_game()));
     connect(newGame_Button, &QPushButton::clicked, this, &Mainmenu::new_game);
+
+    if (game->hasSave())
+    {
+        QPushButton* continueButton = new QPushButton();
+        continueButton->setText("Continue");
+        continueButton->setGeometry(QRect(640, 400, 100, 32));
+        continueButton->setAutoFillBackground(false);
+        addWidget(continueButton);
+        connect(continueButton, &QPushButton::clicked, this, &Mainmenu::continue_game);
+    }
 }
 
 void Mainmenu::new_game()
 {
     game->openCharacterSelect();
+}
+
+void Mainmenu::continue_game()
+{
+    game->loadSave();
 }

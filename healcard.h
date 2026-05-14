@@ -7,6 +7,7 @@ class HealCard : public Card
 public:
     HealCard(int effectValue) ;
     void use() override ;
+    int getDamage() const override ;
 };
 
 #endif // HEALCARD_H

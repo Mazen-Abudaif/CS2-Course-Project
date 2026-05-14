@@ -7,6 +7,7 @@ class Blockcard : public Card
 public:
     Blockcard(int effectValue);
     void use() override;
+    int getDamage() const override;
 };
 
 #endif // BLOCKCARD_H

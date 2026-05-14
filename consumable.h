@@ -7,6 +7,7 @@ class Consumable : public Card
 public:
     Consumable(QString name, int effectValue);
     void use() override;
+    int getDamage() const override;
 
 };
 

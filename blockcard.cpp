@@ -9,3 +9,8 @@ void Blockcard::use()
 {
 
 }
+
+int Blockcard::getDamage() const
+{
+    return effectValue;
+}

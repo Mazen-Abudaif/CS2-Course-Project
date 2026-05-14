@@ -9,3 +9,8 @@ void Consumable::use()
 {
 
 }
+
+int Consumable::getDamage() const
+{
+    return effectValue;
+}

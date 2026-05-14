@@ -3,7 +3,7 @@
 
 Player::Player(QString characterType) : Character(100) {
 
-    if(characterType == "Mage")
+    if(characterType == "mage")
     {
         deck.append(new Consumable("Fireball",20));
 
@@ -12,7 +12,7 @@ Player::Player(QString characterType) : Character(100) {
         skin = skin.scaled(50, 50, Qt::KeepAspectRatio);
         setPixmap(skin);
     
-    } else if(characterType == "Warrior")
+    } else if(characterType == "warrior")
     {
         deck.append(new Consumable("Shield",25));
 

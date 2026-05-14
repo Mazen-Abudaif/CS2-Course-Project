@@ -31,6 +31,8 @@ public:
     QString getRewardCard() const;
     void openNextLevel() ;
     Player* getPlayer() ;
+    bool hasSave();
+    void loadSave();
 
     int current_level ;
 
