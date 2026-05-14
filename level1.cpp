@@ -7,7 +7,7 @@ Level1::Level1(QGraphicsScene* scene, Game* game) : Baselevel(scene, game) {}
 
 void Level1::initialise(){
 
-
+    Baselevel::initialise();
     QPixmap backgroundpixmap(":/images/Images/level 1_background.png");
     QSize targetSize(1280, 720);
     QPixmap scaledPixmap = backgroundpixmap.scaled(targetSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -15,7 +15,6 @@ void Level1::initialise(){
     QGraphicsPixmapItem* background1 = new QGraphicsPixmapItem(scaledPixmap);
     Baselevel::setBackground(background1);
 
-    Baselevel::initialise();
     scene->setSceneRect(0, 0, 1280, 720);
 }
 

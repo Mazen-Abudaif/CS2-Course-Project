@@ -8,13 +8,14 @@
 #include <QWidget>
 #include <vector>
 #include <QPoint>
+#include <QGraphicsRectItem>
 
 using namespace std;
 
 class Grid
 {
 public:
-    Grid(QGraphicsScene* scene, bool spawnBoss = true) ; // the parametrized constructor
+    Grid(QGraphicsScene* scene, int current_level = 1,bool spawnBoss = true) ; // the parametrized constructor
 
     // functions to spawn the items
     void SpawnTraps(int traps_no) ;
@@ -59,6 +60,9 @@ public:
     void removeTriggeredEnemy() ;
     bool allEnemiesDefeated() const ;
 
+    // level 5 special grid
+    void createLevel5layout() ;
+
     // function to create card collectibles and place them
     void PlaceCards(int times,CardType type, const QPixmap& card) ;
 
@@ -76,10 +80,18 @@ public:
     // function to remove cards once stepped on them
     void RemoveCard(pair<int, int> place) ;
 
+    // helper function to help place cards
+    void PlaceCardAt(CardType type , int row, int col, const QPixmap& card) ;
+
+    // visuals for level 5
+    vector<vector<QGraphicsRectItem*>> darknessTiles;
+
+    void createDarkness();
+    void updateDarkness(int playerRow, int playerCol);
 
 private:
     QGraphicsScene* gamescene; // the scene for the game
-    int detectionRange = 2 ;
+    int detectionRange ;
     Boss* boss ;
     Boss* fastEnemy ;
     Boss* tankyEnemy ;
@@ -91,9 +103,10 @@ private:
     int triggeredCombatHp ;
     int triggeredImmuneTurns ;
     Boss* triggeredEnemy ;
+    int current_level ;
 
-    static const int rows = 15;
-    static const int cols = 20;
+    int rows = 17;
+    int cols = 20;
     static const int tileSize = 30;
 
     vector<vector<int>> roomGrid;

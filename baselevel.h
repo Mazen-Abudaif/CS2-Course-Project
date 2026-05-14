@@ -5,8 +5,9 @@
 #include <QTimer>
 #include "player.h"
 #include "grid.h"
-#include <vector>
 #include <QGraphicsPixmapItem>
+#include <QLabel>
+#include <QProgressBar>
 
 class Game ;
 
@@ -26,9 +27,8 @@ public:
     Grid* getRoom() const;
     QGraphicsScene* getScene();
     Game* getGame();
-
-    void updateHearts(Player *player); // updating hearts (lives) when character is damaged
-
+    virtual ~Baselevel() {} ;
+    void updateHpBar() ;
 private slots:
     void update();
 
@@ -40,7 +40,11 @@ protected:
     Player* player;
     // adds effect when walked on trap
     QGraphicsRectItem* damageOverlay;
-    vector<QGraphicsPixmapItem*> hearts; // "player lives"
+    int playerStartRow = 1;
+    int playerStartCol = 1;
+    QProgressBar* hpBar = nullptr;
+    QGraphicsProxyWidget* hpProxy = nullptr;
+
 };
 
 #endif // BASELEVEL_H

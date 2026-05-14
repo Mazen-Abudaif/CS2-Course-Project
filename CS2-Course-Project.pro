@@ -20,6 +20,7 @@ SOURCES += \
     consumable.cpp \
     game.cpp \
     grid.cpp \
+    healcard.cpp \
     level1.cpp \
     level5.cpp \
     level4.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     consumable.h \
     game.h \
     grid.h \
+    healcard.h \
     level1.h \
     level5.h \
     level4.h \
