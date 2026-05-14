@@ -113,6 +113,7 @@ private:
 
     int offsetX;
     int offsetY;
+    bool level4Layout;
 
 
 };

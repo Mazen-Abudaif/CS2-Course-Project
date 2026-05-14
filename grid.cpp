@@ -7,7 +7,6 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsProxyWidget>
 
-
 Grid::Grid(QGraphicsScene* scene, int current_level ,bool spawnBoss)
     : gamescene(scene),
     boss(nullptr),
@@ -19,7 +18,8 @@ Grid::Grid(QGraphicsScene* scene, int current_level ,bool spawnBoss)
     triggeredCombatHp(60),
     triggeredImmuneTurns(0),
     triggeredEnemy(nullptr),
-    current_level(current_level)
+    current_level(current_level),
+    level4Layout(level4Layout)
 {
     int gridWidth = cols * tileSize;
     int gridHeight = rows * tileSize;
@@ -113,7 +113,7 @@ void Grid::setTrap(int traps_no, QGraphicsPixmapItem* trap){
     do{
             row = (rand()%rows) ;
             col = (rand()%cols) ;
-    } while (row==0||col==0||row==rows-1||col==cols-1 || isCardPlaceTaken(row,col)==true) ;
+    } while (!isWalkable(row, col) || isCardPlaceTaken(row, col)) ;
 
     if(current_level==5)
     {
@@ -292,7 +292,7 @@ void Grid::PlaceFastEnemy()
 
 void Grid::PlaceTankyEnemy()
 {
-    tankyEnemy = new Boss(120, BossType::Tanky) ;
+    tankyEnemy = new Boss(80, BossType::Tanky) ;
 
     int row = 3 * rows / 4 ;
     int col = cols / 4 ;
@@ -326,6 +326,13 @@ void Grid::PlaceTankyEnemy()
 void Grid::PlaceCards(int times,CardType type, const QPixmap& card)
 {
     vector<pair<int,int>> fixedPositions;
+    for(int i=0 ; i<times ; i++)
+    {
+    int row, col;
+    do{
+        row = (rand()%rows) ;
+        col = (rand()%cols) ;
+    } while (!isWalkable(row, col) || isCardPlaceTaken(row, col)) ;
 
     if(current_level==5)
     {
@@ -397,6 +404,21 @@ void Grid::initialize_room()
                 // creates the floor
             }
         }
+    }
+
+    if (level4Layout)
+    {
+        // horizontal barrier upper-middle — gap left of col 4 and right of col 10 for navigation
+        for (int col = 4; col <= 10; col++) roomGrid[5][col] = 1;
+
+        // vertical barrier centre — splits left and right halves, gap above row 7 and below row 11
+        for (int row = 7; row <= 11; row++) roomGrid[row][10] = 1;
+
+        // horizontal barrier upper-right — forces player to loop around to reach fast enemy
+        for (int col = 12; col <= 16; col++) roomGrid[7][col] = 1;
+
+        // horizontal barrier lower-centre — narrows path toward tanky enemy
+        for (int col = 8; col <= 13; col++) roomGrid[10][col] = 1;
     }
 }
 
@@ -532,8 +554,8 @@ bool Grid::isPlayerNearby(int playerRow, int playerCol)
         if (dist <= detectionRange)
         {
             triggeredEnemy = tankyEnemy ;
-            triggeredCombatHp = 120 ;
-            triggeredImmuneTurns = 2 ;
+            triggeredCombatHp = 80 ;
+            triggeredImmuneTurns = 1 ;
             return true ;
         }
     }
@@ -580,6 +602,19 @@ void Grid::removeTriggeredEnemy()
             gamescene->removeItem(tankyEnemyCircle) ;
             delete tankyEnemyCircle ;
             tankyEnemyCircle = nullptr ;
+        }
+    }
+    else if (triggeredEnemy == boss)
+    {
+        gamescene->removeItem(boss) ;
+        delete boss ;
+        boss = nullptr ;
+
+        if (detectionCircle != nullptr)
+        {
+            gamescene->removeItem(detectionCircle) ;
+            delete detectionCircle ;
+            detectionCircle = nullptr ;
         }
     }
 
