@@ -58,7 +58,7 @@ void Game::keyPressEvent(QKeyEvent *event)
     if (room->isWalkable(newRow, newCol))
     {
         player->setGridPosition(newRow, newCol);
-        player->setZValue(10);
+        player->setZValue(20);
 
         pair<int,int> player_pos_grid = {newRow, newCol} ;
 

@@ -25,7 +25,7 @@ void Baselevel::initialise(){
     player -> setHealth(100) ; // setting health of the player
 
     player->setGridPosition(playerStartRow, playerStartCol);
-    player->setZValue(2) ;
+    player->setZValue(20) ;
 
     // get position of character after offsetting
     pair<int,int> pos = room->calcScenePosition(playerStartRow, playerStartCol);

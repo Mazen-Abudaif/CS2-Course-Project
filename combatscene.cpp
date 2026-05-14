@@ -399,7 +399,7 @@ void CombatScene::applyAbility()
 {
     QString character = game->getSelectedCharacter();
 
-    if (character == "Mage")
+    if (character == "mage")
     {
         if (bossImmuneTurns > 0)
         {
@@ -410,7 +410,7 @@ void CombatScene::applyAbility()
         abilityUsed = true;
         abilityButton->setEnabled(false);
     }
-    else if (character == "Warrior")
+    else if (character == "warrior")
     {
         if (bossImmuneTurns > 0)
         {
