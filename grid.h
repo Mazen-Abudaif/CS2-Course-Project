@@ -9,13 +9,14 @@
 #include <QWidget>
 #include <vector>
 #include <QPoint>
+#include <QGraphicsRectItem>
 
 using namespace std;
 
 class Grid
 {
 public:
-    Grid(QGraphicsScene* scene, bool spawnBoss = true, bool dense = false, bool level3Mode = false) ; // the parametrized constructor
+    Grid(QGraphicsScene* scene, int current_level = 1, bool spawnBoss = true) ; // the parametrized constructor
 
     // functions to spawn the items
     void SpawnTraps(int traps_no) ;
@@ -76,8 +77,11 @@ public:
     void removeTriggeredEnemy() ;
     bool allEnemiesDefeated() const ;
 
+    // level 5 special grid
+    void createLevel5layout() ;
+
     // function to create card collectibles and place them
-    void PlaceCards(int times, CardType type , QGraphicsPixmapItem* card) ;
+    void PlaceCards(int times,CardType type, const QPixmap& card) ;
 
     // vector to store row and col of traps, to be able to check if player stepped on them
     vector<pair<int,int>> trap_places;
@@ -86,16 +90,25 @@ public:
     // also stores item for later removal
     vector<pair<pair<int,int>,QGraphicsPixmapItem*>> attack_card_places;
     vector<pair<pair<int,int>,QGraphicsPixmapItem*>> block_card_places;
+    vector<pair<pair<int,int>,QGraphicsPixmapItem*>> heal_card_places;
 
     bool isCardPlaceTaken(int row,int col) ;
 
     // function to remove cards once stepped on them
     void RemoveCard(pair<int, int> place) ;
 
+    // helper function to help place cards
+    void PlaceCardAt(CardType type , int row, int col, const QPixmap& card) ;
+
+    // visuals for level 5
+    vector<vector<QGraphicsRectItem*>> darknessTiles;
+
+    void createDarkness();
+    void updateDarkness(int playerRow, int playerCol);
 
 private:
     QGraphicsScene* gamescene; // the scene for the game
-    int detectionRange = 2 ;
+    int detectionRange ;
     Boss* boss ;
     Boss* fastEnemy ;
     Boss* tankyEnemy ;
@@ -108,17 +121,16 @@ private:
     int triggeredCombatHp ;
     int triggeredImmuneTurns ;
     Boss* triggeredEnemy ;
+    int current_level ;
 
-    static const int rows = 15;
-    static const int cols = 20;
+    int rows = 17;
+    int cols = 20;
     static const int tileSize = 30;
 
     vector<vector<int>> roomGrid;
 
     int offsetX;
     int offsetY;
-    bool dense;
-    bool level3Mode;
     int doorRow;
     int doorCol;
     QGraphicsRectItem* doorItem;

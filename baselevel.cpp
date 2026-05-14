@@ -1,5 +1,8 @@
 #include "baselevel.h"
 #include "game.h"
+#include <QLabel>
+#include <QProgressBar>
+#include <QGraphicsProxyWidget>
 
 Baselevel::Baselevel(QGraphicsScene* scene, Game* game) : QObject() , room(nullptr), scene(scene), game(game), player(nullptr)
 {
@@ -10,30 +13,36 @@ Baselevel::Baselevel(QGraphicsScene* scene, Game* game) : QObject() , room(nullp
 
 void Baselevel::setupRoom()
 {
-    room = new Grid(scene) ;
+    room = new Grid(scene,game->current_level,true) ;
 }
 
 void Baselevel::initialise(){
 
     setupRoom() ;
-
     // creating player
     player = new Player(game->getSelectedCharacter());
     scene->addItem(player);
-    player -> setHealth(5) ; // setting health of the player
+    player -> setHealth(100) ; // setting health of the player
 
-    // setting initial position of character
-    player->setGridPosition(1,1);
-    player->setZValue(2) ;
+    player->setGridPosition(playerStartRow, playerStartCol);
+    player->setZValue(20) ;
 
     // get position of character after offsetting
-    pair<int,int> pos = room->calcScenePosition(1, 1);
+    pair<int,int> pos = room->calcScenePosition(playerStartRow, playerStartCol);
 
     int px = pos.first + (room->get_tile_size()- player->pixmap().width())/2 ;
     int py = pos.second + (room->get_tile_size()- player->pixmap().height())/2 ;
 
     player->setScenePosition(px,py);
 
+    hpBar = new QProgressBar();
+    hpBar->setRange(0, 100);
+    hpBar->setValue(player->getHealth());
+    hpBar->setFormat("%v / %m");
+
+    hpProxy = scene->addWidget(hpBar);
+    hpProxy->setPos(50, 20);
+    hpProxy->setZValue(20);
 
     // setting damage effect
     damageOverlay = new QGraphicsRectItem(0, 0, 1280, 720);
@@ -44,37 +53,7 @@ void Baselevel::initialise(){
 
     scene->addItem(damageOverlay);
 
-    // setting hearts (lives)
-    QPixmap heartPixmap(":/images/Images/heart.png") ;
-    heartPixmap = heartPixmap.scaled(30, 30, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-    int spacing = 22;
-    for (int i = 0; i < player->getHealth(); i++)
-    {
-        QGraphicsPixmapItem* heart = new QGraphicsPixmapItem(heartPixmap);
-
-        heart->setPos(580+i*spacing,110);
-        heart->setZValue(200);
-
-        scene->addItem(heart);
-        hearts.push_back(heart);
-    }
-
 }
-
-void Baselevel::updateHearts(Player *player)
-{
-    int currentHealth = player->getHealth();
-
-    for (int i = 0; i < hearts.size(); i++)
-    {
-        if (i < currentHealth)
-            hearts[i]->setVisible(true);
-        else
-            hearts[i]->setVisible(false);
-    }
-}
-
 void Baselevel::setBackground(QGraphicsPixmapItem* background){
 
     scene->addItem(background);
@@ -128,3 +107,8 @@ Game* Baselevel::getGame() {
     return game;
 }
 
+void Baselevel::updateHpBar()
+{
+    if (hpBar && player)
+        hpBar->setValue(player->getHealth());
+}

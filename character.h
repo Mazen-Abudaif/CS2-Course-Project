@@ -21,8 +21,8 @@ public:
 
     // health functions
     int getHealth() const ;
+    void decreaseHealth(int amount) ;
     void setHealth(int x) ;
-    void decreaseHealth(int amount = 1) ;
     bool isDead() const ;
 
     // moved the deck to be public, so it could be accessed by game

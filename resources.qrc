@@ -14,5 +14,10 @@
         <file>Images/Warrior.png</file>
         <file>Images/mageProjectile.png</file>
         <file>Images/warriorProjectile.png</file>
+        <file>Images/level_5_enemy.png</file>
+        <file>Images/heart.png</file>
+        <file>Images/combatscene_l5.png</file>
+        <file>Images/level_5_background.png</file>
+        <file>Images/final_reward.png</file>
     </qresource>
 </RCC>

@@ -27,13 +27,19 @@ public:
     void returnToLevel();
     void setSelectedCharacter(QString character);
     QString getSelectedCharacter() const;
+    void setRewardCard(QString reward);
+    QString getRewardCard() const;
     void openNextLevel() ;
+    Player* getPlayer() ;
+
+    int current_level ;
 
 private:
     QGraphicsScene* gamescene;
     Baselevel* level_1 ;
-    int current_level ;
     QString Character;
+    Player *p ;
+    QString rewardCard;
 
 
 

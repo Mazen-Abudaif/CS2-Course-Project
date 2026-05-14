@@ -20,10 +20,12 @@ SOURCES += \
     consumable.cpp \
     game.cpp \
     grid.cpp \
+    healcard.cpp \
     level1.cpp \
     level2.cpp \
     level3.cpp \
     level4.cpp \
+    level5.cpp \
     main.cpp \
     mainmenu.cpp \
     player.cpp \
@@ -42,10 +44,12 @@ HEADERS += \
     consumable.h \
     game.h \
     grid.h \
+    healcard.h \
     level1.h \
     level2.h \
     level3.h \
     level4.h \
+    level5.h \
     mainmenu.h \
     player.h \
     rewardscene.h

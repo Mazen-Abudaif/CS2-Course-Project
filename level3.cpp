@@ -15,7 +15,7 @@ void Level3::initialise()
 
 void Level3::setupRoom()
 {
-    room = new Grid(scene, false, false, true);
+    room = new Grid(scene, 3, false);
     room->PlaceLevel3Guard1();
     room->PlaceLevel3Guard2();
     room->PlaceLevel3LockedBoss();

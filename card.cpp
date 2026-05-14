@@ -3,3 +3,7 @@
 Card::Card(QString name, CardType type, int effectValue) : name(name), type(type), effectValue(effectValue) {
 
 }
+CardType Card::getType() const
+{
+    return type;
+}

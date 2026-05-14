@@ -18,7 +18,7 @@ void Level2::initialise()
 
 void Level2::setupRoom()
 {
-    room = new Grid(scene,false,true);
+    room = new Grid(scene, 2, false);
     room->PlaceLevel2Enemy1();
     room->PlaceLevel2Enemy2();
 }

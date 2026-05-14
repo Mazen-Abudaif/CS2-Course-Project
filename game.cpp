@@ -1,6 +1,8 @@
 #include "game.h"
 #include "attackcard.h"
 #include "blockcard.h"
+#include "healcard.h"
+#include "level5.h"
 #include "mainmenu.h"
 #include "level1.h"
 #include "level2.h"
@@ -16,6 +18,8 @@ Game::Game(int width,int height)
 {
     current_level = 1 ;
     Character = "" ;
+    rewardCard = "" ;
+    level_1 = nullptr ;
     //disable scroll wheel horrizontly and verticly
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -25,8 +29,9 @@ Game::Game(int width,int height)
     this->setFocusPolicy(Qt::StrongFocus);
     this->setFocus();
 
-    gamescene = new Mainmenu(this) ;
-    this->setScene(gamescene) ;
+    level_1 = nullptr;
+    gamescene = new Mainmenu(this);
+    this->setScene(gamescene);
 
 }
 
@@ -56,6 +61,7 @@ void Game::keyPressEvent(QKeyEvent *event)
     if (room->isWalkable(newRow, newCol))
     {
         player->setGridPosition(newRow, newCol);
+        player->setZValue(20);
 
         pair<int,int> player_pos_grid = {newRow, newCol} ;
 
@@ -88,9 +94,9 @@ void Game::keyPressEvent(QKeyEvent *event)
         {
             level_1 -> triggerDamageeffect() ;
 
-            player -> decreaseHealth() ;
+            player -> decreaseHealth(10) ;
 
-            level_1 -> updateHearts(player) ;
+            level_1->updateHpBar();
 
             if(player->isDead())
             {
@@ -110,7 +116,12 @@ void Game::keyPressEvent(QKeyEvent *event)
         {
             if(player_pos_grid == room-> attack_card_places.at(i).first)
             {
-                player -> deck.append(new Attackcard(10)) ;
+                if(getSelectedCharacter()=="mage")
+                {player -> deck.append(new Attackcard(10)) ;}
+                else if(getSelectedCharacter()=="warrior")
+                {
+                    {player -> deck.append(new Attackcard(5)) ;}
+                }
                 room -> RemoveCard(player_pos_grid) ;
 
             }
@@ -119,11 +130,32 @@ void Game::keyPressEvent(QKeyEvent *event)
         {
             if(player_pos_grid == room-> block_card_places.at(i).first)
             {
-                player -> deck.append(new Blockcard(5)) ;
+                if(getSelectedCharacter()=="mage")
+                {player -> deck.append(new Blockcard(5)) ;}
+                else if(getSelectedCharacter()=="warrior")
+                {
+                    {player -> deck.append(new Blockcard(20));}
+                }
                 room->RemoveCard(player_pos_grid) ;
 
             }
         }
+        for(size_t i=0 ; i <room->heal_card_places.size() ; i++)
+        {
+            if(player_pos_grid == room-> heal_card_places.at(i).first)
+            {
+                if(getSelectedCharacter()=="mage")
+                {player -> deck.append(new HealCard(10)) ;}
+                else if(getSelectedCharacter()=="warrior")
+                {
+                    {player -> deck.append(new Blockcard(20));}
+                }
+                room->RemoveCard(player_pos_grid) ;
+
+            }
+        }
+        p = player ;
+
         // Level 3 key pickup: Guard 1 drops a key that unlocks the boss room
         if (room->isKeyAt(newRow, newCol))
         {
@@ -134,13 +166,17 @@ void Game::keyPressEvent(QKeyEvent *event)
         if(room->isPlayerNearby(newRow,newCol))
         {
             openCombat() ;
+            return ;
         }
     }
+    if(current_level==5)
+        room->updateDarkness(newRow, newCol);
 }
 
 void Game::openMenu()
 {
 
+    gamescene = new Mainmenu(this);
     this->setScene(gamescene);
     this->show();
 
@@ -154,6 +190,7 @@ void Game::closeMenu()
 
 void Game::openLevel1()
 {
+    current_level = 1 ;
     gamescene = new QGraphicsScene() ;
     gamescene ->setSceneRect(0,0,1280,720) ;
 
@@ -168,21 +205,20 @@ void Game::restart()
 {
     if(level_1)
     {
-        delete level_1 ;
-        level_1 = nullptr ;
+        delete level_1;
+        level_1 = nullptr;
     }
 
-    // creating new scene
-    gamescene = new QGraphicsScene() ;
-    gamescene -> setSceneRect(0,0,1280,720) ;
-
-    // creating the level from the beginning
-    level_1 = new Level1(gamescene,this) ;
-    level_1 -> initialise() ;
-
-    // set the game scene
-    this -> setScene(gamescene) ;
-    this -> setFocus() ;
+    if(current_level == 1)
+        openLevel1();
+    else if(current_level == 2)
+        openLevel2() ;
+    else if(current_level == 3)
+        openLevel3() ;
+    else if(current_level == 4)
+        openLevel4();
+    else if(current_level == 5)
+        openLevel5();
 }
 
 void Game::openCharacterSelect()
@@ -201,22 +237,73 @@ QString Game::getSelectedCharacter() const
     return Character ;
 }
 
+void Game::setRewardCard(QString reward)
+{
+    rewardCard = reward ;
+}
+
+QString Game::getRewardCard() const
+{
+    return rewardCard ;
+}
+
 // opens combat scene — reads triggered enemy stats directly from the room
 void Game::openCombat()
 {
-    int bossHp = 60 ;
-    int bossImmuneTurns = 0 ;
+    Player* currentPlayer = level_1->getPlayer();
+
+    if (currentPlayer == nullptr)
+        return ;
+
+    p = currentPlayer;
+
+    bool hasUsableCard = false;
+
+    for (Card* card : currentPlayer->deck)
+    {
+        if (card->getType() == CardType::Attack ||
+            card->getType() == CardType::Block ||
+            card->getType() == CardType::Heal)
+        {
+            hasUsableCard = true;
+            break;
+        }
+    }
+
+    if (currentPlayer == nullptr || !hasUsableCard)
+    {
+        QMessageBox::StandardButton reply =
+            QMessageBox::question(this,
+                                  "Game Over",
+                                  "You entered combat with no usable cards.\nRestart the game?",
+                                  QMessageBox::Yes | QMessageBox::No);
+
+        if (reply == QMessageBox::Yes)
+            restart();
+        else
+            openMenu();
+
+        return;
+    }
+
+    int bossHp ;
+    if(current_level==5)
+        bossHp = 150 ;
+        else
+            bossHp = 60;
+    int bossImmuneTurns = 0;
 
     if (level_1 != nullptr && level_1->getRoom() != nullptr)
     {
-        bossHp = level_1->getRoom()->getTriggeredCombatHp() ;
-        bossImmuneTurns = level_1->getRoom()->getTriggeredImmuneTurns() ;
+        bossHp = level_1->getRoom()->getTriggeredCombatHp();
+        bossImmuneTurns = level_1->getRoom()->getTriggeredImmuneTurns();
     }
 
     CombatScene* combatScene = new CombatScene(this, bossHp, bossImmuneTurns);
     combatScene->initialise();
     this->setScene(combatScene);
 }
+
 // called on combat win — removes the defeated enemy and checks if more remain
 void Game::onCombatWin()
 {
@@ -237,10 +324,14 @@ void Game::onCombatWin()
 // called on combat loss — restarts the appropriate level
 void Game::onCombatLose()
 {
-    if (dynamic_cast<Level4*>(level_1) != nullptr)
+    if (dynamic_cast<Level5*>(level_1) != nullptr)
+        openLevel5() ;
+    else if (dynamic_cast<Level4*>(level_1) != nullptr)
         openLevel4() ;
     else if (dynamic_cast<Level3*>(level_1) != nullptr)
         openLevel3() ;
+    else if (dynamic_cast<Level2*>(level_1) != nullptr)
+        openLevel2() ;
     else
         openLevel1() ;
 }
@@ -275,6 +366,7 @@ void Game::openNextLevel()
         {
             this->close() ;
         }
+        return ;
     }
     if (current_level == 1)
     {
@@ -292,11 +384,11 @@ void Game::openNextLevel()
     {
         openLevel5() ;
     }
-    current_level++ ;
 }
 
 void Game::openLevel2()
 {
+    current_level = 2;
     if (level_1)
     {
         delete level_1 ;
@@ -314,6 +406,7 @@ void Game::openLevel2()
 }
 void Game::openLevel3()
 {
+    current_level = 3;
     if (level_1)
     {
         delete level_1 ;
@@ -331,6 +424,7 @@ void Game::openLevel3()
 }
 void Game::openLevel4()
 {
+    current_level = 4;
     if (level_1)
     {
         delete level_1 ;
@@ -348,5 +442,21 @@ void Game::openLevel4()
 }
 void Game::openLevel5()
 {
+    current_level = 5;
+    if (level_1)
+    {
+        delete level_1 ;
+        level_1 = nullptr ;
+    }
+    gamescene = new QGraphicsScene(this) ;
+    gamescene->setSceneRect(0, 0, 1280, 720) ;
+    level_1 = new Level5(gamescene, this) ;
+    level_1->initialise() ;
+    this->setScene(gamescene) ;
+    this->setFocus() ;
+}
 
+Player* Game::getPlayer()
+{
+    return p ;
 }
