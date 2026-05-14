@@ -18,8 +18,7 @@ Grid::Grid(QGraphicsScene* scene, int current_level ,bool spawnBoss)
     triggeredCombatHp(60),
     triggeredImmuneTurns(0),
     triggeredEnemy(nullptr),
-    current_level(current_level),
-    level4Layout(level4Layout)
+    current_level(current_level)
 {
     int gridWidth = cols * tileSize;
     int gridHeight = rows * tileSize;
@@ -407,7 +406,7 @@ void Grid::initialize_room()
         }
     }
 
-    if (level4Layout)
+    if (current_level == 4)
     {
         // horizontal barrier upper-middle — gap left of col 4 and right of col 10 for navigation
         for (int col = 4; col <= 10; col++) roomGrid[5][col] = 1;

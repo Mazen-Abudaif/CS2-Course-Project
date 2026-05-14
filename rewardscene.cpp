@@ -36,8 +36,8 @@ void RewardScene::initialise()
 
     if(game->current_level!=5) {
     QLabel* titleLabel = new QLabel("Choose a Reward");
-    QPushButton* reward1Button = new QPushButton("Boss Card 1");
-    QPushButton* reward2Button = new QPushButton("Boss Card 2");
+    QPushButton* reward1Button = new QPushButton("Greater Heal\n(Heal +20)");
+    QPushButton* reward2Button = new QPushButton("Dagger\n(Attack +5)");
 
     reward1Button->setFixedSize(140, 180);
     reward2Button->setFixedSize(140, 180);
@@ -72,5 +72,6 @@ void RewardScene::chooseReward2()
 
 void RewardScene::continueAfterReward()
 {
+    game->setRewardCard(selectedReward);
     game->openNextLevel();
 }

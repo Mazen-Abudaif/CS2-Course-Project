@@ -7,8 +7,8 @@ Level4::Level4(QGraphicsScene* scene, Game* game) : Baselevel(scene, game) {}
 
 void Level4::setupRoom()
 {
-    // level4Layout=true adds interior wall barriers in initialize_room before anything spawns
-    room = new Grid(scene, false, true) ;
+    // current_level=4 triggers interior wall barriers in initialize_room, spawnBoss=false uses fast+tanky enemies
+    room = new Grid(scene, 4, false) ;
 
     // extra traps and an additional attack card on top of what the constructor spawns
     room->SpawnTraps(2) ;

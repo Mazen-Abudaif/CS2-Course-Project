@@ -16,6 +16,7 @@ Game::Game(int width,int height)
 {
     current_level = 1 ;
     Character = "" ;
+    rewardCard = "" ;
     level_1 = nullptr ;
     //disable scroll wheel horrizontly and verticly
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -224,6 +225,16 @@ void Game::setSelectedCharacter(QString character)
 QString Game::getSelectedCharacter() const
 {
     return Character ;
+}
+
+void Game::setRewardCard(QString reward)
+{
+    rewardCard = reward ;
+}
+
+QString Game::getRewardCard() const
+{
+    return rewardCard ;
 }
 
 // opens combat scene — reads triggered enemy stats directly from the room
