@@ -76,8 +76,18 @@ void CombatScene::initialise()
     bossHpBar->setValue(boss->getHealth());
     bossHpBar->setFormat("%v / %m");
 
-    attackButton = new QPushButton("Attack Card");
-    healButton = new QPushButton("Heal Card");
+    QString reward = game->getRewardCard();
+
+    if (reward == "Dagger")
+        attackButton = new QPushButton("Attack Card\n(Dagger +5)");
+    else
+        attackButton = new QPushButton("Attack Card");
+
+    if (reward == "Greater Heal")
+        healButton = new QPushButton("Heal Card\n(Greater Heal +20)");
+    else
+        healButton = new QPushButton("Heal Card");
+
     blockButton = new QPushButton("Block Card");
 
     attackButton->setFixedSize(140, 180);
@@ -126,7 +136,11 @@ void CombatScene::initialise()
 
     // Player sprite on the left
     QString characterType = game->getSelectedCharacter();
-    QString spritePath = (characterType == "mage") ? ":/images/Images/Mage.png" : ":/images/Images/Warrior.png";
+    QString spritePath;
+    if (characterType == "mage")
+        spritePath = ":/images/Images/Mage.png";
+    else
+        spritePath = ":/images/Images/Warrior.png";
     QPixmap playerPixmap(spritePath);
     playerPixmap = playerPixmap.scaled(200, 200, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     playerSprite = new QGraphicsPixmapItem(playerPixmap);
@@ -134,20 +148,18 @@ void CombatScene::initialise()
     playerSprite->setZValue(1);
     addItem(playerSprite);
 
-    // Boss sprite on the right
-    QString pic ;
-    if(game->current_level==5)
-    {
-        pic = ":/images/Images/level_5_enemy.png" ;
-    }
+    // Enemy sprite on the right — level 5 uses a different image
+    QString pic;
+    if (game->current_level == 5)
+        pic = ":/images/Images/level_5_enemy.png";
     else
-    { pic = ":/images/Images/demogorgon (enemy).png" ;}
-    QPixmap bossPixmap(pic);
-    bossPixmap = bossPixmap.scaled(300, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    QGraphicsPixmapItem* bossSprite = new QGraphicsPixmapItem(bossPixmap);
-    bossSprite->setPos(900, 250);
-    bossSprite->setZValue(1);
-    addItem(bossSprite);
+        pic = ":/images/Images/demogorgon (enemy).png";
+    QPixmap enemyPixmap(pic);
+    enemyPixmap = enemyPixmap.scaled(300, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    enemySprite = new QGraphicsPixmapItem(enemyPixmap);
+    enemySprite->setPos(900, 250);
+    enemySprite->setZValue(1);
+    addItem(enemySprite);
 
     updateUi();
 }
@@ -360,7 +372,12 @@ void CombatScene::applyAttackCard()
         bossActionLabel->setText("Boss is immune — attack had no effect!");
         return;
     }
-    boss->decreaseHealth(10);
+
+    int damage = 10;
+    if (game->getRewardCard() == "Dagger")
+        damage = 15;
+
+    boss->decreaseHealth(damage);
 }
 
 void CombatScene::applyBlockCard()
@@ -370,7 +387,11 @@ void CombatScene::applyBlockCard()
 }
 void CombatScene::applyHealCard()
 {
-    playerHp += 10;
+    int healAmount = 10;
+    if (game->getRewardCard() == "Greater Heal")
+        healAmount = 20;
+
+    playerHp += healAmount;
     if (playerHp > 100)
         playerHp = 100;
 }
