@@ -373,6 +373,7 @@ void Grid::PlaceCards(int times,CardType type, const QPixmap& card)
 
         PlaceCardAt(type,row,col,card) ;
     }
+    }
 }
 
 void Grid::initialize_room()
@@ -424,7 +425,6 @@ void Grid::initialize_room()
 
 void Grid::draw_room()
 {
-    //gamescene->setBackgroundBrush(QBrush(Qt::darkMagenta));
     //loop over the rows
     for(int row=0 ; row<rows ; row++)
     {
